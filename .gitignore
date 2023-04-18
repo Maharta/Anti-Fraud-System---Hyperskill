@@ -1,0 +1,38 @@
+# Maven build files
+target/
+build/
+out/
+
+# IntelliJ IDEA files
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Gradle build files
+build.gradle
+build.gradle.kts
+gradle/
+.gradle/
+
+# Log files
+log/
+logs/
+
+# Temporary files
+*.log
+*.tmp
+
+# Compiled classes
+*.class
+
+# IDE settings
+settings.gradle
+.gradle/
+.gradle.kts/
+.vscode/
+*.xml
+
+# OS generated files
+.DS_Store
+Thumbs.db
