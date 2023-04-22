@@ -1,10 +1,10 @@
 package antifraud.presentation.controller;
 
-import antifraud.business.exceptions.InvalidRoleException;
-import antifraud.business.exceptions.RoleConflictException;
-import antifraud.business.exceptions.UserNotFoundException;
-import antifraud.business.exceptions.UsernameTakenException;
-import antifraud.business.model.User;
+import antifraud.business.exception.InvalidRoleException;
+import antifraud.business.exception.RoleConflictException;
+import antifraud.business.exception.UserNotFoundException;
+import antifraud.business.exception.UsernameTakenException;
+import antifraud.business.model.entity.User;
 import antifraud.business.services.UserService;
 import antifraud.presentation.DTO.error.ErrorResponse;
 import antifraud.presentation.DTO.user.create.RegisterRequest;

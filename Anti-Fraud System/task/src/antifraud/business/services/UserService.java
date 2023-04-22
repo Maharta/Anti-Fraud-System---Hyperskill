@@ -1,13 +1,13 @@
 package antifraud.business.services;
 
-import antifraud.business.enums.RoleEnum;
-import antifraud.business.enums.StatusOperation;
-import antifraud.business.exceptions.InvalidRoleException;
-import antifraud.business.exceptions.RoleConflictException;
-import antifraud.business.exceptions.UserNotFoundException;
-import antifraud.business.exceptions.UsernameTakenException;
-import antifraud.business.model.Role;
-import antifraud.business.model.User;
+import antifraud.business.exception.InvalidRoleException;
+import antifraud.business.exception.RoleConflictException;
+import antifraud.business.exception.UserNotFoundException;
+import antifraud.business.exception.UsernameTakenException;
+import antifraud.business.model.entity.Role;
+import antifraud.business.model.entity.User;
+import antifraud.business.model.enums.RoleEnum;
+import antifraud.business.model.enums.StatusOperation;
 import antifraud.business.security.UserDetailsImpl;
 import antifraud.persistence.RoleRepository;
 import antifraud.persistence.UserRepository;

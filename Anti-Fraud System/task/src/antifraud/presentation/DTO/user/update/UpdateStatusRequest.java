@@ -1,6 +1,6 @@
 package antifraud.presentation.DTO.user.update;
 
-import antifraud.business.enums.StatusOperation;
+import antifraud.business.model.enums.StatusOperation;
 
 import javax.validation.constraints.NotBlank;
 

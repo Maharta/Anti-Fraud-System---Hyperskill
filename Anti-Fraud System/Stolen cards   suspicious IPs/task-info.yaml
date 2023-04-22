@@ -1086,98 +1086,6 @@ files:
         };
     }
   learner_created: false
-- name: src/antifraud/business/model/User.java
-  visible: true
-  text: |
-    package antifraud.business.model;
-
-    import javax.persistence.*;
-
-    @Entity
-    @Table(name = "USERS")
-    public class User {
-        @Id
-        @Column
-        @GeneratedValue(strategy = GenerationType.AUTO)
-        private long id;
-
-        @Column
-        private String name;
-
-        @Column(unique = true)
-        private String username;
-
-        @Column
-        private String password;
-
-        @Column
-        private boolean isLocked;
-
-        @ManyToOne(optional = false, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-        @JoinColumn(name = "role_id", nullable = false)
-        private Role role;// should be prefixed with ROLE_
-
-        public User() {
-        }
-
-        public User(String name, String username, String password, Role role) {
-            this.username = username.toLowerCase();
-            this.name = name;
-            this.password = password;
-            this.role = role;
-            isLocked = !role.getName().equals("ADMINISTRATOR");
-        }
-
-
-        public long getId() {
-            return id;
-        }
-
-        public void setId(long id) {
-            this.id = id;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getUsername() {
-            return username;
-        }
-
-        public void setUsername(String username) {
-            this.username = username;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
-        public void setPassword(String password) {
-            this.password = password;
-        }
-
-        public Role getRole() {
-            return role;
-        }
-
-        public void setRole(Role role) {
-            this.role = role;
-        }
-
-        public boolean isLocked() {
-            return isLocked;
-        }
-
-        public void setLocked(boolean locked) {
-            isLocked = locked;
-        }
-    }
-  learner_created: true
 - name: src/antifraud/presentation/DTO/user/create/RegisterRequest.java
   visible: true
   text: |
@@ -1434,15 +1342,6 @@ files:
         }
     }
   learner_created: true
-- name: src/antifraud/business/enums/StatusOperation.java
-  visible: true
-  text: |
-    package antifraud.business.enums;
-
-    public enum StatusOperation {
-        LOCK, UNLOCK
-    }
-  learner_created: true
 - name: src/antifraud/presentation/controller/UserController.java
   visible: true
   text: |
@@ -1619,17 +1518,6 @@ files:
 
     }
   learner_created: true
-- name: src/antifraud/business/exceptions/RoleConflictException.java
-  visible: true
-  text: |
-    package antifraud.business.exceptions;
-
-    public class RoleConflictException extends RuntimeException {
-        public RoleConflictException(String message) {
-            super(message);
-        }
-    }
-  learner_created: true
 - name: src/antifraud/presentation/DTO/user/update/UpdateStatusResponse.java
   visible: true
   text: |
@@ -1733,29 +1621,6 @@ files:
     }
 
   learner_created: true
-- name: src/antifraud/business/exceptions/InvalidRoleException.java
-  visible: true
-  text: |
-    package antifraud.business.exceptions;
-
-    public class InvalidRoleException extends RuntimeException {
-
-        public InvalidRoleException(String message) {
-            super(message);
-        }
-    }
-  learner_created: true
-- name: src/antifraud/business/exceptions/UsernameTakenException.java
-  visible: true
-  text: |
-    package antifraud.business.exceptions;
-
-    public class UsernameTakenException extends RuntimeException {
-        public UsernameTakenException(String message) {
-            super(message);
-        }
-    }
-  learner_created: true
 - name: src/antifraud/presentation/DTO/user/delete/DeleteResponse.java
   visible: true
   text: |
@@ -1763,30 +1628,6 @@ files:
 
     public record DeleteResponse(String username, String status) {
     }
-  learner_created: true
-- name: src/antifraud/business/enums/TransactionStatus.java
-  visible: true
-  text: |
-    package antifraud.business.enums;
-
-    public enum TransactionStatus {
-        ALLOWED, MANUAL_PROCESSING, PROHIBITED
-    }
-  learner_created: true
-- name: src/antifraud/business/model/Role.java
-  visible: true
-  text: "package antifraud.business.model;\n\nimport antifraud.business.enums.RoleEnum;\n\
-    import org.springframework.security.core.GrantedAuthority;\n\nimport javax.persistence.*;\n\
-    \n@Entity(name = \"roles\")\npublic class Role implements GrantedAuthority {\n\
-    \    @Id\n    @Column\n    @GeneratedValue(strategy = GenerationType.AUTO)\n \
-    \   private int id;\n\n    @Column\n    private String name;\n\n    @Column\n\
-    \    private String description;\n\n    public Role(RoleEnum rolesEnum) {\n  \
-    \      this.name = rolesEnum.toString();\n        this.description = rolesEnum.getDescription();\n\
-    \    }\n\n    public Role() {\n    }\n\n    public int getId() {\n        return\
-    \ id;\n    }\n    \n    public String getName() {\n        return name;\n    }\n\
-    \n    public String getDescription() {\n        return description;\n    }\n\n\
-    \    @Override\n    public String getAuthority() {\n        return name;\n   \
-    \ }\n}\n"
   learner_created: true
 - name: src/antifraud/business/security/EncoderConfig.java
   visible: true
@@ -1802,27 +1643,6 @@ files:
         @Bean
         public BCryptPasswordEncoder getEncoder() {
             return new BCryptPasswordEncoder();
-        }
-    }
-  learner_created: true
-- name: src/antifraud/business/enums/RoleEnum.java
-  visible: true
-  text: |
-    package antifraud.business.enums;
-
-    public enum RoleEnum {
-        ADMINISTRATOR("Administrator Role"),
-        MERCHANT("Basic Merchant Role"),
-        SUPPORT("Special Support Role");
-
-        private final String description;
-
-        private RoleEnum(String description) {
-            this.description = description;
-        }
-
-        public String getDescription() {
-            return description;
         }
     }
   learner_created: true
@@ -1920,18 +1740,6 @@ files:
 
     }
   learner_created: true
-- name: src/antifraud/business/exceptions/UserNotFoundException.java
-  visible: true
-  text: |
-    package antifraud.business.exceptions;
-
-    public class UserNotFoundException extends RuntimeException {
-
-        public UserNotFoundException(String message) {
-            super(message);
-        }
-    }
-  learner_created: true
 - name: src/antifraud/persistence/RoleRepository.java
   visible: true
   text: |
@@ -1963,6 +1771,201 @@ files:
 
     public record UpdateRoleRequest(@NotBlank String username, @NotBlank String role) {
     }
+  learner_created: true
+- name: src/antifraud/business/model/entity/Role.java
+  visible: true
+  text: "package antifraud.business.model;\n\nimport antifraud.business.enums.RoleEnum;\n\
+    import org.springframework.security.core.GrantedAuthority;\n\nimport javax.persistence.*;\n\
+    \n@Entity(name = \"roles\")\npublic class Role implements GrantedAuthority {\n\
+    \    @Id\n    @Column\n    @GeneratedValue(strategy = GenerationType.AUTO)\n \
+    \   private int id;\n\n    @Column\n    private String name;\n\n    @Column\n\
+    \    private String description;\n\n    public Role(RoleEnum rolesEnum) {\n  \
+    \      this.name = rolesEnum.toString();\n        this.description = rolesEnum.getDescription();\n\
+    \    }\n\n    public Role() {\n    }\n\n    public int getId() {\n        return\
+    \ id;\n    }\n    \n    public String getName() {\n        return name;\n    }\n\
+    \n    public String getDescription() {\n        return description;\n    }\n\n\
+    \    @Override\n    public String getAuthority() {\n        return name;\n   \
+    \ }\n}\n"
+  learner_created: true
+- name: src/antifraud/business/model/entity/User.java
+  visible: true
+  text: |
+    package antifraud.business.model;
+
+    import javax.persistence.*;
+
+    @Entity
+    @Table(name = "USERS")
+    public class User {
+        @Id
+        @Column
+        @GeneratedValue(strategy = GenerationType.AUTO)
+        private long id;
+
+        @Column
+        private String name;
+
+        @Column(unique = true)
+        private String username;
+
+        @Column
+        private String password;
+
+        @Column
+        private boolean isLocked;
+
+        @ManyToOne(optional = false, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+        @JoinColumn(name = "role_id", nullable = false)
+        private Role role;// should be prefixed with ROLE_
+
+        public User() {
+        }
+
+        public User(String name, String username, String password, Role role) {
+            this.username = username.toLowerCase();
+            this.name = name;
+            this.password = password;
+            this.role = role;
+            isLocked = !role.getName().equals("ADMINISTRATOR");
+        }
+
+
+        public long getId() {
+            return id;
+        }
+
+        public void setId(long id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+
+        public Role getRole() {
+            return role;
+        }
+
+        public void setRole(Role role) {
+            this.role = role;
+        }
+
+        public boolean isLocked() {
+            return isLocked;
+        }
+
+        public void setLocked(boolean locked) {
+            isLocked = locked;
+        }
+    }
+  learner_created: true
+- name: src/antifraud/business/model/enums/StatusOperation.java
+  visible: true
+  text: |
+    package antifraud.business.enums;
+
+    public enum StatusOperation {
+        LOCK, UNLOCK
+    }
+  learner_created: true
+- name: src/antifraud/business/model/enums/RoleEnum.java
+  visible: true
+  text: |
+    package antifraud.business.enums;
+
+    public enum RoleEnum {
+        ADMINISTRATOR("Administrator Role"),
+        MERCHANT("Basic Merchant Role"),
+        SUPPORT("Special Support Role");
+
+        private final String description;
+
+        private RoleEnum(String description) {
+            this.description = description;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+    }
+  learner_created: true
+- name: src/antifraud/business/model/enums/TransactionStatus.java
+  visible: true
+  text: |
+    package antifraud.business.enums;
+
+    public enum TransactionStatus {
+        ALLOWED, MANUAL_PROCESSING, PROHIBITED
+    }
+  learner_created: true
+- name: src/antifraud/business/exception/RoleConflictException.java
+  visible: true
+  text: |
+    package antifraud.business.exceptions;
+
+    public class RoleConflictException extends RuntimeException {
+        public RoleConflictException(String message) {
+            super(message);
+        }
+    }
+  learner_created: true
+- name: src/antifraud/business/exception/InvalidRoleException.java
+  visible: true
+  text: |
+    package antifraud.business.exceptions;
+
+    public class InvalidRoleException extends RuntimeException {
+
+        public InvalidRoleException(String message) {
+            super(message);
+        }
+    }
+  learner_created: true
+- name: src/antifraud/business/exception/UsernameTakenException.java
+  visible: true
+  text: |
+    package antifraud.business.exceptions;
+
+    public class UsernameTakenException extends RuntimeException {
+        public UsernameTakenException(String message) {
+            super(message);
+        }
+    }
+  learner_created: true
+- name: src/antifraud/business/exception/UserNotFoundException.java
+  visible: true
+  text: |
+    package antifraud.business.exceptions;
+
+    public class UserNotFoundException extends RuntimeException {
+
+        public UserNotFoundException(String message) {
+            super(message);
+        }
+    }
+  learner_created: true
+- name: src/antifraud/business/security/banking/Luhn.java
+  visible: true
   learner_created: true
 feedback_link: https://hyperskill.org/learn/step/18070#comment
 status: Unchecked

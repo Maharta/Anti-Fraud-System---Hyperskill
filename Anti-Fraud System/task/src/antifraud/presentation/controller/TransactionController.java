@@ -1,7 +1,7 @@
 package antifraud.presentation.controller;
 
 import antifraud.business.Transaction;
-import antifraud.business.enums.TransactionStatus;
+import antifraud.business.model.enums.TransactionStatus;
 import antifraud.business.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

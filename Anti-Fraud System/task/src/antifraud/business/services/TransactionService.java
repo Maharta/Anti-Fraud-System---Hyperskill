@@ -1,7 +1,7 @@
 package antifraud.business.services;
 
 import antifraud.business.Transaction;
-import antifraud.business.enums.TransactionStatus;
+import antifraud.business.model.enums.TransactionStatus;
 import org.springframework.stereotype.Service;
 
 @Service

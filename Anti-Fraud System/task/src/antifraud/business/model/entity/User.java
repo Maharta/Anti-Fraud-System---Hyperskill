@@ -1,4 +1,4 @@
-package antifraud.business.model;
+package antifraud.business.model.entity;
 
 import javax.persistence.*;
 

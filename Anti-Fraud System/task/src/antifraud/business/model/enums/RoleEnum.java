@@ -1,4 +1,4 @@
-package antifraud.business.enums;
+package antifraud.business.model.enums;
 
 public enum RoleEnum {
     ADMINISTRATOR("Administrator Role"),

@@ -1,6 +1,6 @@
 package antifraud.persistence;
 
-import antifraud.business.model.User;
+import antifraud.business.model.entity.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

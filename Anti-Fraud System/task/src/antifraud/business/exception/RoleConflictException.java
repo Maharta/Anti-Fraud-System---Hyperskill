@@ -1,4 +1,4 @@
-package antifraud.business.exceptions;
+package antifraud.business.exception;
 
 public class RoleConflictException extends RuntimeException {
     public RoleConflictException(String message) {

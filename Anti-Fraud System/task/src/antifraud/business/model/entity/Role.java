@@ -1,6 +1,6 @@
-package antifraud.business.model;
+package antifraud.business.model.entity;
 
-import antifraud.business.enums.RoleEnum;
+import antifraud.business.model.enums.RoleEnum;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
@@ -29,7 +29,7 @@ public class Role implements GrantedAuthority {
     public int getId() {
         return id;
     }
-    
+
     public String getName() {
         return name;
     }

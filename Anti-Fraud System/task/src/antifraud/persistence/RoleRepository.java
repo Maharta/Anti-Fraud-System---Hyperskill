@@ -1,6 +1,6 @@
 package antifraud.persistence;
 
-import antifraud.business.model.Role;
+import antifraud.business.model.entity.Role;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
