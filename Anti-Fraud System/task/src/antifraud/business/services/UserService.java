@@ -1,5 +1,9 @@
 package antifraud.business.services;
 
+import antifraud.business.enums.RoleEnum;
+import antifraud.business.enums.StatusOperation;
+import antifraud.business.exceptions.InvalidRoleException;
+import antifraud.business.exceptions.RoleConflictException;
 import antifraud.business.exceptions.UserNotFoundException;
 import antifraud.business.exceptions.UsernameTakenException;
 import antifraud.business.model.Role;
@@ -7,8 +11,10 @@ import antifraud.business.model.User;
 import antifraud.business.security.UserDetailsImpl;
 import antifraud.persistence.RoleRepository;
 import antifraud.persistence.UserRepository;
-import antifraud.presentation.DTO.user.RegisterRequest;
-import antifraud.presentation.DTO.user.UserResponse;
+import antifraud.presentation.DTO.user.create.RegisterRequest;
+import antifraud.presentation.DTO.user.read.UserResponse;
+import antifraud.presentation.DTO.user.update.UpdateRoleRequest;
+import antifraud.presentation.DTO.user.update.UpdateStatusRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -34,27 +40,80 @@ public class UserService implements UserDetailsService {
         this.bcryptEncoder = encoder;
     }
 
-    public User registerNewUser(RegisterRequest registerRequest) throws UsernameTakenException {
-
-        boolean isUsernameAvailable = checkUsernameAvailability(registerRequest.username().toLowerCase());
-        if (!isUsernameAvailable) {
-            throw new UsernameTakenException(registerRequest.username() + " is already registered!");
-        }
-        User user = new User(registerRequest.name(), registerRequest.username(), bcryptEncoder.encode(registerRequest.password()));
-        preventRolesDuplicates(user.getRolesAndAuthorities());
-        userRepository.save(user);
-        return user;
-    }
-
 
     public List<UserResponse> getAllUsers() {
         Iterable<User> userIterable = userRepository.findAll();
         List<UserResponse> userResponseList = new ArrayList<>();
         for (User user : userIterable) {
-                userResponseList.add(new UserResponse(user.getId(), user.getName(), user.getUsername()));
+            userResponseList.add(new UserResponse(user.getId(), user.getName(), user.getUsername(), user.getRole().getName()));
         }
         return userResponseList;
     }
+
+
+    public User registerNewUser(RegisterRequest registerRequest) throws UsernameTakenException {
+        boolean isFirstUser = userRepository.count() == 0;
+        if (isFirstUser) {
+            return registerNewAdmin(registerRequest);
+        }
+
+        boolean isUsernameAvailable = checkUsernameAvailability(registerRequest.username().toLowerCase());
+        if (!isUsernameAvailable) {
+            throw new UsernameTakenException(registerRequest.username() + " is already registered!");
+        }
+
+        User user = new User(registerRequest.name(), registerRequest.username(), bcryptEncoder.encode(registerRequest.password()), new Role(RoleEnum.MERCHANT));
+        user.setRole(preventRolesDuplicates(user.getRole()));
+        userRepository.save(user);
+        return user;
+    }
+
+    private User registerNewAdmin(RegisterRequest registerRequest) {
+        User user = new User(registerRequest.name(), registerRequest.username(), bcryptEncoder.encode(registerRequest.password()), new Role(RoleEnum.ADMINISTRATOR));
+        userRepository.save(user);
+        return user;
+    }
+
+    public User updateUserRole(UpdateRoleRequest updateUserRoleRequest) {
+        if (!updateUserRoleRequest.role().equals("SUPPORT") && !updateUserRoleRequest.role().equals("MERCHANT")) {
+            throw new InvalidRoleException("Role must be SUPPORT or MERCHANT");
+        }
+
+        Optional<User> userToUpdate = userRepository.findByUsername(updateUserRoleRequest.username());
+        if (userToUpdate.isEmpty()) {
+            throw new UserNotFoundException("Can't find the user to be updated.");
+        }
+
+        User foundUser = userToUpdate.get();
+        if (foundUser.getRole().getName().equals(updateUserRoleRequest.role())) {
+            throw new RoleConflictException("This user already has " + updateUserRoleRequest.role() + " role.");
+        }
+
+        Role role = preventRolesDuplicates(new Role(RoleEnum.valueOf(updateUserRoleRequest.role())));
+        foundUser.setRole(role);
+
+        return userRepository.save(foundUser);
+    }
+
+    public User updateUserStatus(UpdateStatusRequest updateRequest) {
+        Optional<User> userToUpdate = userRepository.findByUsername(updateRequest.username());
+        if (userToUpdate.isEmpty()) {
+            throw new UserNotFoundException("Can't find the user to be updated.");
+        }
+
+        User foundUser = userToUpdate.get();
+
+        boolean isLockRequested = updateRequest.operation().equals(StatusOperation.LOCK);
+
+        if (foundUser.getRole().getName().equals("ADMINISTRATOR") && isLockRequested) {
+            throw new IllegalArgumentException("ADMINISTRATOR account can't be locked!");
+        }
+
+        foundUser.setLocked(isLockRequested);
+
+        return userRepository.save(foundUser);
+    }
+
 
     public User deleteUserByUsername(String username) {
         Optional<User> user = userRepository.findByUsername(username);
@@ -69,14 +128,10 @@ public class UserService implements UserDetailsService {
         return userToDelete;
     }
 
-    private void preventRolesDuplicates(List<Role> rolesAndAuthorities) {
-        for (int i = 0; i < rolesAndAuthorities.size(); i++) {
-            Role current = rolesAndAuthorities.get(i);
-            Role role = roleRepository.findByName(current.getName());
-            if (role != null) {
-                rolesAndAuthorities.set(i, role);
-            }
-        }
+    private Role preventRolesDuplicates(Role role) {
+        Optional<Role> optionalRole = roleRepository.findByName(role.getName());
+
+        return optionalRole.orElse(role);
     }
 
     private boolean checkUsernameAvailability(String username) {
@@ -84,6 +139,7 @@ public class UserService implements UserDetailsService {
 
         return user.isEmpty();
     }
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -95,4 +151,6 @@ public class UserService implements UserDetailsService {
 
         return new UserDetailsImpl(user.get());
     }
+
+
 }

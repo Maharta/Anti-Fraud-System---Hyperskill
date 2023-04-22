@@ -808,19 +808,6 @@ files:
         }
     }
   learner_created: true
-- name: src/antifraud/business/enums/RolesEnum.java
-  visible: true
-  text: |
-    package antifraud.business.enums;
-
-    public enum RolesEnum {
-        ROLE_ADMIN, ROLE_USER;
-
-        public static String getRoleUserDescription() {
-            return "Basic User Role";
-        }
-    }
-  learner_created: true
 - name: src/antifraud/business/enums/TransactionStatus.java
   visible: true
   text: |
@@ -1107,17 +1094,6 @@ files:
 
     }
   learner_created: true
-- name: src/antifraud/presentation/DTO/user/RegisterRequest.java
-  visible: true
-  text: |
-    package antifraud.presentation.DTO.user;
-
-    import javax.validation.constraints.NotBlank;
-
-    public record RegisterRequest(@NotBlank String name, @NotBlank String username,
-                                  @NotBlank String password) {
-    }
-  learner_created: true
 - name: src/antifraud/presentation/controller/exceptionhandler/GlobalExceptionHandler.java
   visible: true
   text: |
@@ -1286,14 +1262,6 @@ files:
         Optional<User> findByUsername(String username);
     }
   learner_created: true
-- name: src/antifraud/presentation/DTO/user/DeleteResponse.java
-  visible: true
-  text: |
-    package antifraud.presentation.DTO.user;
-
-    public record DeleteResponse(String username, String status) {
-    }
-  learner_created: true
 - name: src/antifraud/business/Transaction.java
   visible: true
   text: |
@@ -1454,7 +1422,39 @@ files:
     }
 
   learner_created: true
-- name: src/antifraud/presentation/DTO/user/UserResponse.java
+- name: src/antifraud/business/enums/RoleEnum.java
+  visible: true
+  text: |
+    package antifraud.business.enums;
+
+    public enum RolesEnum {
+        ROLE_ADMIN, ROLE_USER;
+
+        public static String getRoleUserDescription() {
+            return "Basic User Role";
+        }
+    }
+  learner_created: true
+- name: src/antifraud/presentation/DTO/user/create/RegisterRequest.java
+  visible: true
+  text: |
+    package antifraud.presentation.DTO.user;
+
+    import javax.validation.constraints.NotBlank;
+
+    public record RegisterRequest(@NotBlank String name, @NotBlank String username,
+                                  @NotBlank String password) {
+    }
+  learner_created: true
+- name: src/antifraud/presentation/DTO/user/delete/DeleteResponse.java
+  visible: true
+  text: |
+    package antifraud.presentation.DTO.user;
+
+    public record DeleteResponse(String username, String status) {
+    }
+  learner_created: true
+- name: src/antifraud/presentation/DTO/user/read/UserResponse.java
   visible: true
   text: |
     package antifraud.presentation.DTO.user;
@@ -1462,6 +1462,27 @@ files:
     public record UserResponse(long id, String name, String username) {
     }
   learner_created: true
+- name: src/antifraud/business/exceptions/InvalidRoleException.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/business/exceptions/RoleConflictException.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/presentation/DTO/user/update/UpdateStatusRequest.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/presentation/DTO/user/update/UpdateRoleRequest.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/presentation/DTO/user/update/UpdateStatusResponse.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/business/enums/StatusOperation.java
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/18069#comment
-status: Unchecked
-record: -1
+status: Solved
+feedback:
+  message: Congratulations!
+  time: "Thu, 20 Apr 2023 02:50:37 UTC"
+record: 3
