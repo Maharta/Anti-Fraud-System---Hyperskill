@@ -11,4 +11,6 @@ public interface IPRepository extends CrudRepository<IP, Long> {
     <S extends IP> S save(S entity);
 
     Optional<IP> findByIp(String ipv4);
+
+    void delete(IP entity);
 }

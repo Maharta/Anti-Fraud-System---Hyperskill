@@ -1,5 +1,6 @@
 package antifraud.business.services;
 
+import antifraud.business.exception.EntityNotFoundException;
 import antifraud.business.exception.IPAlreadyExistException;
 import antifraud.business.model.entity.IP;
 import antifraud.persistence.IPRepository;
@@ -29,4 +30,13 @@ public class IPService {
     }
 
 
+    public void deleteSuspiciousIP(String ipAddress) {
+        Optional<IP> ipToBeDeleted = ipRepository.findByIp(ipAddress);
+
+        if (ipToBeDeleted.isEmpty()) {
+            throw new EntityNotFoundException("IP %s doesn't exist.".formatted(ipAddress));
+        }
+
+        ipRepository.delete(ipToBeDeleted.get());
+    }
 }
