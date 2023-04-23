@@ -1,12 +1,15 @@
 package antifraud.presentation.controller;
 
 import antifraud.business.Transaction;
-import antifraud.business.services.TransactionService;
 import antifraud.business.enums.TransactionStatus;
+import antifraud.business.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
@@ -25,12 +28,6 @@ public class TransactionController {
         return Map.of("result", status);
     }
 
-
-
-    @GetMapping("/test")
-    public String test() {
-        return "/test is accessed";
-    }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException exception) {

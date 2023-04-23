@@ -1,4 +1,4 @@
-package antifraud.presentation.DTO.user;
+package antifraud.presentation.DTO.user.create;
 
 import javax.validation.constraints.NotBlank;
 

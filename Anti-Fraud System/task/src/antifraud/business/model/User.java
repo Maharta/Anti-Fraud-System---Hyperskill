@@ -1,10 +1,6 @@
 package antifraud.business.model;
 
-import antifraud.business.enums.RolesEnum;
-
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "USERS")
@@ -23,24 +19,23 @@ public class User {
     @Column
     private String password;
 
-    @ManyToMany(cascade = {
-            CascadeType.MERGE,
-            CascadeType.PERSIST
-    }, fetch = FetchType.EAGER)
-    @JoinTable(name = "USER_ROLES")
-    private List<Role> rolesAndAuthorities; // should be prefixed with ROLE_
+    @Column
+    private boolean isLocked;
+
+    @ManyToOne(optional = false, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;// should be prefixed with ROLE_
 
     public User() {
     }
 
-    public User(String name, String username, String password) {
+    public User(String name, String username, String password, Role role) {
         this.username = username.toLowerCase();
         this.name = name;
         this.password = password;
-        this.rolesAndAuthorities = new ArrayList<>();
-        rolesAndAuthorities.add(new Role(RolesEnum.ROLE_USER, RolesEnum.getRoleUserDescription()));
+        this.role = role;
+        isLocked = !role.getName().equals("ADMINISTRATOR");
     }
-
 
 
     public long getId() {
@@ -75,11 +70,19 @@ public class User {
         this.password = password;
     }
 
-    public List<Role> getRolesAndAuthorities() {
-        return rolesAndAuthorities;
+    public Role getRole() {
+        return role;
     }
 
-    public void setRolesAndAuthorities(List<Role> rolesAndAuthorities) {
-        this.rolesAndAuthorities = rolesAndAuthorities;
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public boolean isLocked() {
+        return isLocked;
+    }
+
+    public void setLocked(boolean locked) {
+        isLocked = locked;
     }
 }
