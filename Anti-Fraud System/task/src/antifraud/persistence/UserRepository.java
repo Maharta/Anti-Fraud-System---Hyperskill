@@ -14,4 +14,6 @@ public interface UserRepository extends CrudRepository<User, UUID> {
     Optional<User> findByUsername(String username);
 
     long count();
+
+    <S extends User> S save(S entity);
 }

@@ -4,5 +4,5 @@ import antifraud.business.model.enums.StatusOperation;
 
 import javax.validation.constraints.NotBlank;
 
-public record UpdateStatusRequest(@NotBlank String username, StatusOperation operation) {
+public record UpdateStatusRequestDTO(@NotBlank String username, StatusOperation operation) {
 }

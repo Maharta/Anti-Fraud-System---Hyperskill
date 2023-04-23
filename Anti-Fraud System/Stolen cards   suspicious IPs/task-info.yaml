@@ -1086,38 +1086,6 @@ files:
         };
     }
   learner_created: false
-- name: src/antifraud/presentation/DTO/user/create/RegisterRequest.java
-  visible: true
-  text: |
-    package antifraud.presentation.DTO.user.create;
-
-    import javax.validation.constraints.NotBlank;
-
-    public record RegisterRequest(@NotBlank String name, @NotBlank String username,
-                                  @NotBlank String password) {
-    }
-  learner_created: true
-- name: src/antifraud/presentation/DTO/error/ErrorResponse.java
-  visible: true
-  text: |
-    package antifraud.presentation.DTO.error;
-
-    import java.time.LocalDateTime;
-
-    public record ErrorResponse(LocalDateTime dateTime, int errorCode, String message) {}
-  learner_created: true
-- name: src/antifraud/presentation/DTO/user/update/UpdateStatusRequest.java
-  visible: true
-  text: |
-    package antifraud.presentation.DTO.user.update;
-
-    import antifraud.business.enums.StatusOperation;
-
-    import javax.validation.constraints.NotBlank;
-
-    public record UpdateStatusRequest(@NotBlank String username, StatusOperation operation) {
-    }
-  learner_created: true
 - name: src/antifraud/business/services/UserService.java
   visible: true
   text: |
@@ -1450,82 +1418,6 @@ files:
         long count();
     }
   learner_created: true
-- name: src/antifraud/business/Transaction.java
-  visible: true
-  text: |
-    package antifraud.business;
-
-    import javax.persistence.Column;
-    import javax.persistence.Entity;
-    import javax.persistence.Id;
-
-    @Entity
-    public class Transaction {
-        @Id
-        @Column
-        private long id;
-
-        @Column
-        private long amount;
-
-        public long getAmount() {
-            return amount;
-        }
-
-        public Transaction() {
-        }
-    }
-  learner_created: true
-- name: src/antifraud/presentation/controller/TransactionController.java
-  visible: true
-  text: |
-    package antifraud.presentation.controller;
-
-    import antifraud.business.Transaction;
-    import antifraud.business.enums.TransactionStatus;
-    import antifraud.business.services.TransactionService;
-    import org.springframework.beans.factory.annotation.Autowired;
-    import org.springframework.http.HttpStatus;
-    import org.springframework.http.ResponseEntity;
-    import org.springframework.web.bind.annotation.ExceptionHandler;
-    import org.springframework.web.bind.annotation.PostMapping;
-    import org.springframework.web.bind.annotation.RequestBody;
-    import org.springframework.web.bind.annotation.RestController;
-
-    import java.util.Map;
-
-    @RestController
-    public class TransactionController {
-        @Autowired
-        private TransactionService transactionService;
-
-        @PostMapping("/api/antifraud/transaction")
-        public Map<String, TransactionStatus> checkFraud(@RequestBody Transaction transaction) {
-            if (transaction == null) {
-                throw new IllegalArgumentException("Body not provided!");
-            }
-
-            TransactionStatus status = transactionService.checkFraud(transaction);
-            return Map.of("result", status);
-        }
-
-
-        @ExceptionHandler(IllegalArgumentException.class)
-        public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException exception) {
-            Map<String, String> errorMap = Map.of("error", exception.getMessage());
-            return new ResponseEntity<>(errorMap, HttpStatus.BAD_REQUEST);
-        }
-
-    }
-  learner_created: true
-- name: src/antifraud/presentation/DTO/user/update/UpdateStatusResponse.java
-  visible: true
-  text: |
-    package antifraud.presentation.DTO.user.update;
-
-    public record UpdateStatusResponse(String status) {
-    }
-  learner_created: true
 - name: src/antifraud/business/security/UserDetailsImpl.java
   visible: true
   text: |
@@ -1620,14 +1512,6 @@ files:
 
     }
 
-  learner_created: true
-- name: src/antifraud/presentation/DTO/user/delete/DeleteResponse.java
-  visible: true
-  text: |
-    package antifraud.presentation.DTO.user.delete;
-
-    public record DeleteResponse(String username, String status) {
-    }
   learner_created: true
 - name: src/antifraud/business/security/EncoderConfig.java
   visible: true
@@ -1752,24 +1636,6 @@ files:
 
     public interface RoleRepository extends CrudRepository<Role, Integer> {
         Optional<Role> findByName(String name);
-    }
-  learner_created: true
-- name: src/antifraud/presentation/DTO/user/read/UserResponse.java
-  visible: true
-  text: |
-    package antifraud.presentation.DTO.user.read;
-
-    public record UserResponse(long id, String name, String username, String role) {
-    }
-  learner_created: true
-- name: src/antifraud/presentation/DTO/user/update/UpdateRoleRequest.java
-  visible: true
-  text: |
-    package antifraud.presentation.DTO.user.update;
-
-    import javax.validation.constraints.NotBlank;
-
-    public record UpdateRoleRequest(@NotBlank String username, @NotBlank String role) {
     }
   learner_created: true
 - name: src/antifraud/business/model/entity/Role.java
@@ -1964,7 +1830,171 @@ files:
         }
     }
   learner_created: true
-- name: src/antifraud/business/security/banking/Luhn.java
+- name: src/antifraud/business/model/entity/Transaction.java
+  visible: true
+  text: |
+    package antifraud.business;
+
+    import javax.persistence.Column;
+    import javax.persistence.Entity;
+    import javax.persistence.Id;
+
+    @Entity
+    public class Transaction {
+        @Id
+        @Column
+        private long id;
+
+        @Column
+        private long amount;
+
+        public long getAmount() {
+            return amount;
+        }
+
+        public Transaction() {
+        }
+    }
+  learner_created: true
+- name: src/antifraud/business/model/entity/IP.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/persistence/IPRepository.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/business/security/validation/Luhn.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/presentation/DTO/error/ErrorResponseDTO.java
+  visible: true
+  text: |
+    package antifraud.presentation.DTO.error;
+
+    import java.time.LocalDateTime;
+
+    public record ErrorResponse(LocalDateTime dateTime, int errorCode, String message) {}
+  learner_created: true
+- name: src/antifraud/presentation/DTO/user/update/UpdateRoleRequestDTO.java
+  visible: true
+  text: |
+    package antifraud.presentation.DTO.user.update;
+
+    import javax.validation.constraints.NotBlank;
+
+    public record UpdateRoleRequest(@NotBlank String username, @NotBlank String role) {
+    }
+  learner_created: true
+- name: src/antifraud/presentation/DTO/user/update/UpdateStatusRequestDTO.java
+  visible: true
+  text: |
+    package antifraud.presentation.DTO.user.update;
+
+    import antifraud.business.enums.StatusOperation;
+
+    import javax.validation.constraints.NotBlank;
+
+    public record UpdateStatusRequest(@NotBlank String username, StatusOperation operation) {
+    }
+  learner_created: true
+- name: src/antifraud/presentation/DTO/StatusResponseDTO.java
+  visible: true
+  text: |
+    package antifraud.presentation.DTO.user.update;
+
+    public record UpdateStatusResponse(String status) {
+    }
+  learner_created: true
+- name: src/antifraud/presentation/DTO/user/UserRequestDTO.java
+  visible: true
+  text: |
+    package antifraud.presentation.DTO.user.create;
+
+    import javax.validation.constraints.NotBlank;
+
+    public record RegisterRequest(@NotBlank String name, @NotBlank String username,
+                                  @NotBlank String password) {
+    }
+  learner_created: true
+- name: src/antifraud/presentation/DTO/user/UserResponseDTO.java
+  visible: true
+  text: |
+    package antifraud.presentation.DTO.user.read;
+
+    public record UserResponse(long id, String name, String username, String role) {
+    }
+  learner_created: true
+- name: src/antifraud/presentation/DTO/user/delete/DeleteResponseDTO.java
+  visible: true
+  text: |
+    package antifraud.presentation.DTO.user.delete;
+
+    public record DeleteResponse(String username, String status) {
+    }
+  learner_created: true
+- name: src/antifraud/business/security/validation/IPValidator.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/business/services/IPService.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/presentation/controller/AntiFraudController.java
+  visible: true
+  text: |
+    package antifraud.presentation.controller;
+
+    import antifraud.business.Transaction;
+    import antifraud.business.enums.TransactionStatus;
+    import antifraud.business.services.TransactionService;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.http.HttpStatus;
+    import org.springframework.http.ResponseEntity;
+    import org.springframework.web.bind.annotation.ExceptionHandler;
+    import org.springframework.web.bind.annotation.PostMapping;
+    import org.springframework.web.bind.annotation.RequestBody;
+    import org.springframework.web.bind.annotation.RestController;
+
+    import java.util.Map;
+
+    @RestController
+    public class TransactionController {
+        @Autowired
+        private TransactionService transactionService;
+
+        @PostMapping("/api/antifraud/transaction")
+        public Map<String, TransactionStatus> checkFraud(@RequestBody Transaction transaction) {
+            if (transaction == null) {
+                throw new IllegalArgumentException("Body not provided!");
+            }
+
+            TransactionStatus status = transactionService.checkFraud(transaction);
+            return Map.of("result", status);
+        }
+
+
+        @ExceptionHandler(IllegalArgumentException.class)
+        public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException exception) {
+            Map<String, String> errorMap = Map.of("error", exception.getMessage());
+            return new ResponseEntity<>(errorMap, HttpStatus.BAD_REQUEST);
+        }
+
+    }
+  learner_created: true
+- name: src/antifraud/presentation/DTO/transaction/TransactionDTO.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/presentation/DTO/ip/IPResponseDTO.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/presentation/DTO/ip/IPRequestDTO.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/presentation/validation/ValidIP.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/presentation/validation/IPConstraintValidator.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/business/exception/IPAlreadyExistException.java
   visible: true
   learner_created: true
 feedback_link: https://hyperskill.org/learn/step/18070#comment

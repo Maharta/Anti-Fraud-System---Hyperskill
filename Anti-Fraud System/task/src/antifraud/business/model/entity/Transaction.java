@@ -1,4 +1,4 @@
-package antifraud.business;
+package antifraud.business.model.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,10 +13,14 @@ public class Transaction {
     @Column
     private long amount;
 
-    public long getAmount() {
-        return amount;
+    public Transaction() {
     }
 
-    public Transaction() {
+    public long getId() {
+        return id;
+    }
+
+    public long getAmount() {
+        return amount;
     }
 }

@@ -1,4 +1,4 @@
-package antifraud.business.security.banking;
+package antifraud.business.security.validation;
 
 public class Luhn {
     public static String generateValidChecksum(String numberSequence) {

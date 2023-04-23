@@ -11,10 +11,10 @@ import antifraud.business.model.enums.StatusOperation;
 import antifraud.business.security.UserDetailsImpl;
 import antifraud.persistence.RoleRepository;
 import antifraud.persistence.UserRepository;
-import antifraud.presentation.DTO.user.create.RegisterRequest;
-import antifraud.presentation.DTO.user.read.UserResponse;
-import antifraud.presentation.DTO.user.update.UpdateRoleRequest;
-import antifraud.presentation.DTO.user.update.UpdateStatusRequest;
+import antifraud.presentation.DTO.user.UserRequestDTO;
+import antifraud.presentation.DTO.user.UserResponseDTO;
+import antifraud.presentation.DTO.user.update.UpdateRoleRequestDTO;
+import antifraud.presentation.DTO.user.update.UpdateStatusRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -41,17 +41,17 @@ public class UserService implements UserDetailsService {
     }
 
 
-    public List<UserResponse> getAllUsers() {
+    public List<UserResponseDTO> getAllUsers() {
         Iterable<User> userIterable = userRepository.findAll();
-        List<UserResponse> userResponseList = new ArrayList<>();
+        List<UserResponseDTO> userResponseList = new ArrayList<>();
         for (User user : userIterable) {
-            userResponseList.add(new UserResponse(user.getId(), user.getName(), user.getUsername(), user.getRole().getName()));
+            userResponseList.add(new UserResponseDTO(user.getId(), user.getName(), user.getUsername(), user.getRole().getName()));
         }
         return userResponseList;
     }
 
 
-    public User registerNewUser(RegisterRequest registerRequest) throws UsernameTakenException {
+    public User registerNewUser(UserRequestDTO registerRequest) throws UsernameTakenException {
         boolean isFirstUser = userRepository.count() == 0;
         if (isFirstUser) {
             return registerNewAdmin(registerRequest);
@@ -68,13 +68,13 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
-    private User registerNewAdmin(RegisterRequest registerRequest) {
+    private User registerNewAdmin(UserRequestDTO registerRequest) {
         User user = new User(registerRequest.name(), registerRequest.username(), bcryptEncoder.encode(registerRequest.password()), new Role(RoleEnum.ADMINISTRATOR));
         userRepository.save(user);
         return user;
     }
 
-    public User updateUserRole(UpdateRoleRequest updateUserRoleRequest) {
+    public User updateUserRole(UpdateRoleRequestDTO updateUserRoleRequest) {
         if (!updateUserRoleRequest.role().equals("SUPPORT") && !updateUserRoleRequest.role().equals("MERCHANT")) {
             throw new InvalidRoleException("Role must be SUPPORT or MERCHANT");
         }
@@ -95,7 +95,7 @@ public class UserService implements UserDetailsService {
         return userRepository.save(foundUser);
     }
 
-    public User updateUserStatus(UpdateStatusRequest updateRequest) {
+    public User updateUserStatus(UpdateStatusRequestDTO updateRequest) {
         Optional<User> userToUpdate = userRepository.findByUsername(updateRequest.username());
         if (userToUpdate.isEmpty()) {
             throw new UserNotFoundException("Can't find the user to be updated.");
