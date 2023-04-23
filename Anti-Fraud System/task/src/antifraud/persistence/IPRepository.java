@@ -13,4 +13,6 @@ public interface IPRepository extends CrudRepository<IP, Long> {
     Optional<IP> findByIp(String ipv4);
 
     void delete(IP entity);
+
+    Iterable<IP> findAll();
 }

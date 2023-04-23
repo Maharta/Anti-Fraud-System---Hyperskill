@@ -5,9 +5,12 @@ import antifraud.business.exception.IPAlreadyExistException;
 import antifraud.business.model.entity.IP;
 import antifraud.persistence.IPRepository;
 import antifraud.presentation.DTO.ip.IPRequestDTO;
+import antifraud.presentation.DTO.ip.IPResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -38,5 +41,19 @@ public class IPService {
         }
 
         ipRepository.delete(ipToBeDeleted.get());
+    }
+
+    /**
+     * Directly return DTO for performance, as for now there is no difference between IP DTO and IP Entity.
+     */
+    public List<IPResponseDTO> getAllSuspiciousIPDTO() {
+        Iterable<IP> ipIterable = ipRepository.findAll();
+        List<IPResponseDTO> ipDTOList = new ArrayList<>();
+
+        for (IP ip : ipIterable) {
+            ipDTOList.add(new IPResponseDTO(ip.getId(), ip.getIp()));
+        }
+
+        return ipDTOList;
     }
 }

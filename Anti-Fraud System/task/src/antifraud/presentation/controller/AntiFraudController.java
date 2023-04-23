@@ -16,6 +16,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -34,6 +35,12 @@ public class AntiFraudController {
     public ResponseEntity<Map<String, TransactionStatus>> checkFraud(@RequestBody @Valid TransactionDTO transaction) {
         TransactionStatus status = transactionService.checkFraud(transaction);
         return new ResponseEntity<>(Map.of("result", status), HttpStatus.OK);
+    }
+
+    @GetMapping("/api/antifraud/suspicious-ip")
+    public ResponseEntity<List<IPResponseDTO>> getAllSuspiciousIP() {
+        List<IPResponseDTO> ipResponseDTOS = ipService.getAllSuspiciousIPDTO();
+        return new ResponseEntity<>(ipResponseDTOS, HttpStatus.OK);
     }
 
     @PostMapping("/api/antifraud/suspicious-ip")
