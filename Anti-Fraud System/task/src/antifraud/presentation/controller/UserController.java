@@ -1,7 +1,6 @@
 package antifraud.presentation.controller;
 
 import antifraud.business.exception.InvalidRoleException;
-import antifraud.business.exception.UserNotFoundException;
 import antifraud.business.model.entity.User;
 import antifraud.business.services.UserService;
 import antifraud.presentation.DTO.StatusResponseDTO;
@@ -58,12 +57,6 @@ public class UserController {
     public ResponseEntity<DeleteResponseDTO> deleteUserByUsername(@PathVariable String username) {
         User deletedUser = userService.deleteUserByUsername(username);
         return new ResponseEntity<>(new DeleteResponseDTO(deletedUser.getUsername(), "Deleted successfully!"), HttpStatus.OK);
-    }
-
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ErrorResponseDTO> handleUserNotFound(UserNotFoundException ex) {
-        ErrorResponseDTO errorResponse = new ErrorResponseDTO(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), ex.getMessage());
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(InvalidRoleException.class)

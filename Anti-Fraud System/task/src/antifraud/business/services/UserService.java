@@ -1,8 +1,8 @@
 package antifraud.business.services;
 
+import antifraud.business.exception.EntityNotFoundException;
 import antifraud.business.exception.InvalidRoleException;
 import antifraud.business.exception.RoleConflictException;
-import antifraud.business.exception.UserNotFoundException;
 import antifraud.business.exception.UsernameTakenException;
 import antifraud.business.model.entity.Role;
 import antifraud.business.model.entity.User;
@@ -81,7 +81,7 @@ public class UserService implements UserDetailsService {
 
         Optional<User> userToUpdate = userRepository.findByUsername(updateUserRoleRequest.username());
         if (userToUpdate.isEmpty()) {
-            throw new UserNotFoundException("Can't find the user to be updated.");
+            throw new EntityNotFoundException("Can't find the user to be updated.");
         }
 
         User foundUser = userToUpdate.get();
@@ -98,7 +98,7 @@ public class UserService implements UserDetailsService {
     public User updateUserStatus(UpdateStatusRequestDTO updateRequest) {
         Optional<User> userToUpdate = userRepository.findByUsername(updateRequest.username());
         if (userToUpdate.isEmpty()) {
-            throw new UserNotFoundException("Can't find the user to be updated.");
+            throw new EntityNotFoundException("Can't find the user to be updated.");
         }
 
         User foundUser = userToUpdate.get();
@@ -119,7 +119,7 @@ public class UserService implements UserDetailsService {
         Optional<User> user = userRepository.findByUsername(username);
 
         if (user.isEmpty()) {
-            throw new UserNotFoundException("Can't find the user to be deleted.");
+            throw new EntityNotFoundException("Can't find the user to be deleted.");
         }
 
         User userToDelete = user.get();
