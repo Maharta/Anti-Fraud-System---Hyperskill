@@ -1,5 +1,6 @@
 package antifraud.presentation.controller.exceptionhandler;
 
+import antifraud.business.exception.EntityNotFoundException;
 import antifraud.business.exception.IPAlreadyExistException;
 import antifraud.business.exception.RoleConflictException;
 import antifraud.business.exception.UsernameTakenException;
@@ -29,6 +30,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDTO> handleExistingConflict(Exception ex) {
         ErrorResponseDTO errorResponse = new ErrorResponseDTO(LocalDateTime.now(), HttpStatus.CONFLICT.value(), ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+    
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleUserNotFound(EntityNotFoundException ex) {
+        ErrorResponseDTO errorResponse = new ErrorResponseDTO(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     private ValidationError processFieldErrors(List<FieldError> fieldErrors) {
