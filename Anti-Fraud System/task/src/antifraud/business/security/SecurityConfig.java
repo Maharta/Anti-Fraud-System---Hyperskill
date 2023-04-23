@@ -53,6 +53,7 @@ public class SecurityConfig {
                 .mvcMatchers(HttpMethod.PUT, "/api/auth/role").hasRole("ADMINISTRATOR")
                 .mvcMatchers(HttpMethod.POST, "/api/antifraud/transaction").hasRole("MERCHANT")
                 .mvcMatchers("/api/antifraud/suspicious-ip").hasRole("SUPPORT")
+                .mvcMatchers("/api/antifraud/suspicious-ip/*").hasRole("SUPPORT")
                 .antMatchers("/actuator/shutdown").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated()
