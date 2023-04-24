@@ -56,15 +56,19 @@ public class GlobalExceptionHandler {
     private ValidationError processFieldErrors(List<FieldError> fieldErrors) {
         ValidationError validationError = new ValidationError(HttpStatus.BAD_REQUEST.value(), "Field Validation Error");
         for (FieldError fieldError : fieldErrors) {
-            validationError.addCustomFieldError(fieldError.getField(), fieldError.getField() + " " + fieldError.getDefaultMessage(), fieldError.getRejectedValue());
+            validationError.addCustomFieldError(fieldError.getField(),
+                    fieldError.getDefaultMessage(),
+                    fieldError.getRejectedValue());
         }
         return validationError;
     }
 
     private ValidationError processConstraintViolations(Set<ConstraintViolation<?>> constraintViolations) {
-        ValidationError validationError = new ValidationError(HttpStatus.BAD_REQUEST.value(), "Field Validation Error");
+        ValidationError validationError = new ValidationError(HttpStatus.BAD_REQUEST.value(), "PathVariable Validation Error");
         for (ConstraintViolation<?> constraintViolation : constraintViolations) {
-            validationError.addCustomFieldError(constraintViolation.getPropertyPath().toString(), constraintViolation.getMessage(), constraintViolation.getInvalidValue());
+            validationError.addCustomFieldError(constraintViolation.getPropertyPath().toString(),
+                    constraintViolation.getMessage(),
+                    constraintViolation.getInvalidValue());
         }
 
         return validationError;
