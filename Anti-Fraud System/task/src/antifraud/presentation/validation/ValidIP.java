@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = IPConstraintValidator.class)
 public @interface ValidIP {
-    String message() default "must be a valid ipv4 address";
+    String message() default "Invalid IPV4 Address";
 
     Class<?>[] groups() default {};
 
