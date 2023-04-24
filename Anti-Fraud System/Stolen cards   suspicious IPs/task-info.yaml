@@ -1807,17 +1807,6 @@ files:
         }
     }
   learner_created: true
-- name: src/antifraud/business/exception/UsernameTakenException.java
-  visible: true
-  text: |
-    package antifraud.business.exceptions;
-
-    public class UsernameTakenException extends RuntimeException {
-        public UsernameTakenException(String message) {
-            super(message);
-        }
-    }
-  learner_created: true
 - name: src/antifraud/business/model/entity/Transaction.java
   visible: true
   text: |
@@ -1982,9 +1971,6 @@ files:
 - name: src/antifraud/presentation/validation/IPConstraintValidator.java
   visible: true
   learner_created: true
-- name: src/antifraud/business/exception/IPAlreadyExistException.java
-  visible: true
-  learner_created: true
 - name: src/antifraud/business/exception/EntityNotFoundException.java
   visible: true
   text: |
@@ -1996,6 +1982,24 @@ files:
             super(message);
         }
     }
+  learner_created: true
+- name: src/antifraud/business/model/entity/StolenCard.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/presentation/DTO/card/StolenCardRequestDTO.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/presentation/DTO/card/StolenCardResponseDTO.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/persistence/StolenCardRepository.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/business/services/CardService.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/business/exception/InvalidCardNumberException.java
+  visible: true
   learner_created: true
 feedback_link: https://hyperskill.org/learn/step/18070#comment
 status: Unchecked

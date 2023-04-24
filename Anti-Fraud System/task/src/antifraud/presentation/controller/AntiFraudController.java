@@ -1,10 +1,14 @@
 package antifraud.presentation.controller;
 
 import antifraud.business.model.entity.IP;
+import antifraud.business.model.entity.StolenCard;
 import antifraud.business.model.enums.TransactionStatus;
+import antifraud.business.services.CardService;
 import antifraud.business.services.IPService;
 import antifraud.business.services.TransactionService;
 import antifraud.presentation.DTO.StatusResponseDTO;
+import antifraud.presentation.DTO.card.StolenCardRequestDTO;
+import antifraud.presentation.DTO.card.StolenCardResponseDTO;
 import antifraud.presentation.DTO.ip.IPRequestDTO;
 import antifraud.presentation.DTO.ip.IPResponseDTO;
 import antifraud.presentation.DTO.transaction.TransactionDTO;
@@ -24,11 +28,13 @@ import java.util.Map;
 public class AntiFraudController {
     private final TransactionService transactionService;
     private final IPService ipService;
+    private final CardService cardService;
 
     @Autowired
-    public AntiFraudController(TransactionService transactionService, IPService ipService) {
+    public AntiFraudController(TransactionService transactionService, IPService ipService, CardService cardService) {
         this.transactionService = transactionService;
         this.ipService = ipService;
+        this.cardService = cardService;
     }
 
     @PostMapping("/api/antifraud/transaction")
@@ -50,11 +56,17 @@ public class AntiFraudController {
     }
 
     @DeleteMapping("/api/antifraud/suspicious-ip/{ip}")
-    @Validated
     public ResponseEntity<StatusResponseDTO> removeSuspiciousIP(@PathVariable("ip") @ValidIP String ipAddress) {
         ipService.deleteSuspiciousIP(ipAddress);
 
         return new ResponseEntity<>(new StatusResponseDTO("IP %s successfully removed".formatted(ipAddress)), HttpStatus.OK);
+    }
+
+    @PostMapping("/api/antifraud/stolencard")
+    public ResponseEntity<StolenCardResponseDTO> saveStolenCard(@RequestBody @Valid StolenCardRequestDTO stolenCardRequestDTO) {
+        StolenCard savedCard = cardService.saveCardAsStolen(stolenCardRequestDTO);
+
+        return new ResponseEntity<>(new StolenCardResponseDTO(savedCard.getId(), savedCard.getNumber()), HttpStatus.OK);
     }
 
 }
