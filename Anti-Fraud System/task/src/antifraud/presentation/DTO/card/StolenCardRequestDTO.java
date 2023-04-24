@@ -1,6 +1,6 @@
 package antifraud.presentation.DTO.card;
 
-import javax.validation.constraints.NotBlank;
+import antifraud.presentation.validation.ValidCardNumber;
 
-public record StolenCardRequestDTO(@NotBlank String number) {
+public record StolenCardRequestDTO(@ValidCardNumber String number) {
 }
