@@ -1,7 +1,6 @@
 package antifraud.business.services;
 
 import antifraud.business.exception.EntityNotFoundException;
-import antifraud.business.exception.IPAlreadyExistException;
 import antifraud.business.model.entity.IP;
 import antifraud.persistence.IPRepository;
 import antifraud.presentation.DTO.ip.IPRequestDTO;
@@ -9,6 +8,7 @@ import antifraud.presentation.DTO.ip.IPResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityExistsException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +26,7 @@ public class IPService {
         Optional<IP> existingIP = ipRepository.findByIp(ipRequestDTO.ip());
 
         if (existingIP.isPresent()) {
-            throw new IPAlreadyExistException("IP %s already exist!".formatted(ipRequestDTO.ip()));
+            throw new EntityExistsException("IP %s already exist!".formatted(ipRequestDTO.ip()));
         }
 
         return ipRepository.save(new IP(ipRequestDTO.ip()));

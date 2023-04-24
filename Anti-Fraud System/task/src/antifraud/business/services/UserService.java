@@ -3,7 +3,6 @@ package antifraud.business.services;
 import antifraud.business.exception.EntityNotFoundException;
 import antifraud.business.exception.InvalidRoleException;
 import antifraud.business.exception.RoleConflictException;
-import antifraud.business.exception.UsernameTakenException;
 import antifraud.business.model.entity.Role;
 import antifraud.business.model.entity.User;
 import antifraud.business.model.enums.RoleEnum;
@@ -22,6 +21,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityExistsException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -51,7 +51,7 @@ public class UserService implements UserDetailsService {
     }
 
 
-    public User registerNewUser(UserRequestDTO registerRequest) throws UsernameTakenException {
+    public User registerNewUser(UserRequestDTO registerRequest) {
         boolean isFirstUser = userRepository.count() == 0;
         if (isFirstUser) {
             return registerNewAdmin(registerRequest);
@@ -59,7 +59,7 @@ public class UserService implements UserDetailsService {
 
         boolean isUsernameAvailable = checkUsernameAvailability(registerRequest.username().toLowerCase());
         if (!isUsernameAvailable) {
-            throw new UsernameTakenException(registerRequest.username() + " is already registered!");
+            throw new EntityExistsException(registerRequest.username() + " is already registered!");
         }
 
         User user = new User(registerRequest.name(), registerRequest.username(), bcryptEncoder.encode(registerRequest.password()), new Role(RoleEnum.MERCHANT));

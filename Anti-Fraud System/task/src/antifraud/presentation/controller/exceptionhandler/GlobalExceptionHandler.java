@@ -1,9 +1,7 @@
 package antifraud.presentation.controller.exceptionhandler;
 
 import antifraud.business.exception.EntityNotFoundException;
-import antifraud.business.exception.IPAlreadyExistException;
 import antifraud.business.exception.RoleConflictException;
-import antifraud.business.exception.UsernameTakenException;
 import antifraud.presentation.DTO.error.ErrorResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.persistence.EntityExistsException;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
@@ -35,14 +34,14 @@ public class GlobalExceptionHandler {
         ValidationError validationError = processConstraintViolations(constraintViolations);
         return new ResponseEntity<>(validationError, HttpStatus.BAD_REQUEST);
     }
-    
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponseDTO> handleIllegalArgumentException(IllegalArgumentException ex) {
         ErrorResponseDTO errorResponse = new ErrorResponseDTO(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(), ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({UsernameTakenException.class, RoleConflictException.class, IPAlreadyExistException.class})
+    @ExceptionHandler({RoleConflictException.class, EntityExistsException.class})
     public ResponseEntity<ErrorResponseDTO> handleExistingConflict(Exception ex) {
         ErrorResponseDTO errorResponse = new ErrorResponseDTO(LocalDateTime.now(), HttpStatus.CONFLICT.value(), ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
