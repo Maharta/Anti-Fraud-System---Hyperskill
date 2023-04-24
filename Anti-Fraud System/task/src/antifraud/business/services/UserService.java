@@ -63,7 +63,7 @@ public class UserService implements UserDetailsService {
         }
 
         User user = new User(registerRequest.name(), registerRequest.username(), bcryptEncoder.encode(registerRequest.password()), new Role(RoleEnum.MERCHANT));
-        user.setRole(preventRolesDuplicates(user.getRole()));
+        user.setRole(preventRoleDuplicate(user.getRole()));
         userRepository.save(user);
         return user;
     }
@@ -89,7 +89,7 @@ public class UserService implements UserDetailsService {
             throw new RoleConflictException("This user already has " + updateUserRoleRequest.role() + " role.");
         }
 
-        Role role = preventRolesDuplicates(new Role(RoleEnum.valueOf(updateUserRoleRequest.role())));
+        Role role = preventRoleDuplicate(new Role(RoleEnum.valueOf(updateUserRoleRequest.role())));
         foundUser.setRole(role);
 
         return userRepository.save(foundUser);
@@ -128,7 +128,7 @@ public class UserService implements UserDetailsService {
         return userToDelete;
     }
 
-    private Role preventRolesDuplicates(Role role) {
+    private Role preventRoleDuplicate(Role role) {
         Optional<Role> optionalRole = roleRepository.findByName(role.getName());
 
         return optionalRole.orElse(role);
