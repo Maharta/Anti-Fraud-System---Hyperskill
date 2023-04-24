@@ -12,6 +12,7 @@ import antifraud.presentation.DTO.card.StolenCardResponseDTO;
 import antifraud.presentation.DTO.ip.IPRequestDTO;
 import antifraud.presentation.DTO.ip.IPResponseDTO;
 import antifraud.presentation.DTO.transaction.TransactionDTO;
+import antifraud.presentation.validation.ValidCardNumber;
 import antifraud.presentation.validation.ValidIP;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -67,6 +68,13 @@ public class AntiFraudController {
         StolenCard savedCard = cardService.saveCardAsStolen(stolenCardRequestDTO);
 
         return new ResponseEntity<>(new StolenCardResponseDTO(savedCard.getId(), savedCard.getNumber()), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/api/antifraud/stolencard/{number}")
+    public ResponseEntity<StatusResponseDTO> deleteStolenCard(@PathVariable("number") @ValidCardNumber String cardNumber) {
+        cardService.deleteCardByNumber(cardNumber);
+        StatusResponseDTO statusResponseDTO = new StatusResponseDTO("Card %s successfully removed!".formatted(cardNumber));
+        return new ResponseEntity<>(statusResponseDTO, HttpStatus.OK);
     }
 
 }

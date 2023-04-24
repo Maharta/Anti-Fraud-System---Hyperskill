@@ -11,4 +11,6 @@ public interface StolenCardRepository extends CrudRepository<StolenCard, Long> {
     <S extends StolenCard> S save(S entity);
 
     Optional<StolenCard> findByNumber(String number);
+
+    void delete(StolenCard entity);
 }

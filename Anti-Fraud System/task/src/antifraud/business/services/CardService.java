@@ -1,8 +1,7 @@
 package antifraud.business.services;
 
-import antifraud.business.exception.InvalidCardNumberException;
+import antifraud.business.exception.EntityNotFoundException;
 import antifraud.business.model.entity.StolenCard;
-import antifraud.business.security.validation.Luhn;
 import antifraud.persistence.StolenCardRepository;
 import antifraud.presentation.DTO.card.StolenCardRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +20,8 @@ public class CardService {
     }
 
     public StolenCard saveCardAsStolen(StolenCardRequestDTO stolenCardRequestDTO) {
-        boolean isCardNumberValid = checkCardNumberValidity(stolenCardRequestDTO.number());
-
-        if (!isCardNumberValid) {
-            throw new InvalidCardNumberException("%s is not a valid card number!".formatted(stolenCardRequestDTO.number()));
-        }
-
         Optional<StolenCard> cardInDB = stolenCardRepository.findByNumber(stolenCardRequestDTO.number());
-        
+
         if (cardInDB.isPresent()) {
             throw new EntityExistsException("Card with number %s already exists!".formatted(stolenCardRequestDTO.number()));
         }
@@ -36,15 +29,15 @@ public class CardService {
         return stolenCardRepository.save(new StolenCard(stolenCardRequestDTO.number()));
     }
 
-    private boolean checkCardNumberValidity(String number) {
-        if (number.length() != 16) {
-            return false;
+    public void deleteCardByNumber(String cardNumber) {
+        Optional<StolenCard> stolenCard = stolenCardRepository.findByNumber(cardNumber);
+
+        if (stolenCard.isEmpty()) {
+            throw new EntityNotFoundException("Card with number %s does not exists!".formatted(cardNumber));
         }
 
-        String numberWithoutChecksum = number.substring(0, number.length() - 1);
-        char currentChecksum = number.charAt(number.length() - 1);
-        char validChecksum = Luhn.generateValidChecksum(numberWithoutChecksum).charAt(0);
-
-        return currentChecksum == validChecksum;
+        stolenCardRepository.delete(stolenCard.get());
     }
+
+
 }
