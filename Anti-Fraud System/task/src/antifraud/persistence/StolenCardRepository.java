@@ -13,4 +13,6 @@ public interface StolenCardRepository extends CrudRepository<StolenCard, Long> {
     Optional<StolenCard> findByNumber(String number);
 
     void delete(StolenCard entity);
+
+    Iterable<StolenCard> findAll();
 }
