@@ -20,6 +20,10 @@ public class Luhn {
     }
 
     public static boolean checkCardNumberValidity(String cardNumber) {
+        if (cardNumber.length() != 16) {
+            return false;
+        }
+        
         String noChecksumCard = cardNumber.substring(0, cardNumber.length() - 1);
         char validChecksum = generateValidChecksum(noChecksumCard).charAt(0);
         char cardChecksum = cardNumber.charAt(cardNumber.length() - 1);
