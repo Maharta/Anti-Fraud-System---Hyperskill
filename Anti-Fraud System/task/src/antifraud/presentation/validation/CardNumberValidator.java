@@ -12,6 +12,9 @@ public class CardNumberValidator implements ConstraintValidator<ValidCardNumber,
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
+        if (value == null) {
+            return false;
+        }
         return Luhn.checkCardNumberValidity(value);
     }
 }
