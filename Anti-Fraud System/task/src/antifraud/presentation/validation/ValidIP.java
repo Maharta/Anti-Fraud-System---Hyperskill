@@ -4,6 +4,9 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
 
+/**
+ * The annotated element must be a valid ipv4 address.
+ */
 @Documented
 @Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
