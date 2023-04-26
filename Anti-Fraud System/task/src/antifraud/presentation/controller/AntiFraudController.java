@@ -2,7 +2,6 @@ package antifraud.presentation.controller;
 
 import antifraud.business.model.entity.IP;
 import antifraud.business.model.entity.StolenCard;
-import antifraud.business.model.enums.TransactionStatus;
 import antifraud.business.services.CardService;
 import antifraud.business.services.IPService;
 import antifraud.business.services.TransactionService;
@@ -11,7 +10,8 @@ import antifraud.presentation.DTO.card.StolenCardRequestDTO;
 import antifraud.presentation.DTO.card.StolenCardResponseDTO;
 import antifraud.presentation.DTO.ip.IPRequestDTO;
 import antifraud.presentation.DTO.ip.IPResponseDTO;
-import antifraud.presentation.DTO.transaction.TransactionDTO;
+import antifraud.presentation.DTO.transaction.TransactionRequestDTO;
+import antifraud.presentation.DTO.transaction.TransactionResponseDTO;
 import antifraud.presentation.validation.ValidCardNumber;
 import antifraud.presentation.validation.ValidIP;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @Validated
@@ -39,9 +38,9 @@ public class AntiFraudController {
     }
 
     @PostMapping("/api/antifraud/transaction")
-    public ResponseEntity<Map<String, TransactionStatus>> checkFraud(@RequestBody @Valid TransactionDTO transaction) {
-        TransactionStatus status = transactionService.checkFraud(transaction);
-        return new ResponseEntity<>(Map.of("result", status), HttpStatus.OK);
+    public ResponseEntity<TransactionResponseDTO> checkFraud(@RequestBody @Valid TransactionRequestDTO transaction) {
+        TransactionResponseDTO transactionResponseDTO = transactionService.checkFraud(transaction);
+        return new ResponseEntity<>(transactionResponseDTO, HttpStatus.OK);
     }
 
     @GetMapping("/api/antifraud/suspicious-ip")
@@ -61,6 +60,13 @@ public class AntiFraudController {
         ipService.deleteSuspiciousIP(ipAddress);
 
         return new ResponseEntity<>(new StatusResponseDTO("IP %s successfully removed".formatted(ipAddress)), HttpStatus.OK);
+    }
+
+    @GetMapping("/api/antifraud/stolencard")
+    public ResponseEntity<List<StolenCardResponseDTO>> getAllStolenCards() {
+        List<StolenCardResponseDTO> stolenCards = cardService.getAllStolenCards();
+
+        return new ResponseEntity<>(stolenCards, HttpStatus.OK);
     }
 
     @PostMapping("/api/antifraud/stolencard")
