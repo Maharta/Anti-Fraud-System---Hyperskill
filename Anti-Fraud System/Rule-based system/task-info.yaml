@@ -2528,22 +2528,6 @@ files:
         Iterable<IP> findAll();
     }
   learner_created: true
-- name: src/antifraud/persistence/RoleRepository.java
-  visible: true
-  text: |
-    package antifraud.persistence;
-
-    import antifraud.business.model.entity.Role;
-    import org.springframework.data.repository.CrudRepository;
-    import org.springframework.stereotype.Repository;
-
-    import java.util.Optional;
-
-    @Repository
-    public interface RoleRepository extends CrudRepository<Role, Integer> {
-        Optional<Role> findByName(String name);
-    }
-  learner_created: true
 - name: src/antifraud/business/exception/EntityNotFoundException.java
   visible: true
   text: |
@@ -2811,6 +2795,37 @@ files:
     package antifraud.presentation.DTO.card;
 
     public record StolenCardResponseDTO(long id, String number) {
+    }
+  learner_created: true
+- name: src/antifraud/presentation/controller/TransactionController.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/presentation/DTO/user/update/UpdateStatusRequest.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/presentation/DTO/user/update/UpdateStatusResponse.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/presentation/DTO/user/update/UpdateRoleRequest.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/presentation/DTO/user/delete/DeleteResponse.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/persistence/RoleRepository.java
+  visible: true
+  text: |
+    package antifraud.persistence;
+
+    import antifraud.business.model.entity.Role;
+    import org.springframework.data.repository.CrudRepository;
+    import org.springframework.stereotype.Repository;
+
+    import java.util.Optional;
+
+    @Repository
+    public interface RoleRepository extends CrudRepository<Role, Integer> {
+        Optional<Role> findByName(String name);
     }
   learner_created: true
 feedback_link: https://hyperskill.org/learn/step/18071#comment
