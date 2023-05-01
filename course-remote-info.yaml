@@ -3,7 +3,7 @@ hyperskill_project:
   ide_files: https://stepik.org/media/attachments/lesson/657120/additional_files.json
   is_template_based: false
   use_ide: true
-update_date: "Mon, 24 Apr 2023 14:03:55 UTC"
+update_date: "Mon, 01 May 2023 13:26:12 UTC"
 stages:
 - id: 1161
   step: 18067
@@ -16,7 +16,7 @@ stages:
   is_completed: true
 - id: 1164
   step: 18070
-  is_completed: false
+  is_completed: true
 - id: 1165
   step: 18071
   is_completed: false
@@ -57,6 +57,8 @@ topics:
     theory_id: 16927
   - title: HTTP URL
     theory_id: 6740
+  - title: The concept of patterns
+    theory_id: 3611
   - title: Basic project structure
     theory_id: 6339
   - title: IoC Container
@@ -73,16 +75,14 @@ topics:
     theory_id: 19487
   - title: Bean lifecycle
     theory_id: 19550
-  - title: The concept of patterns
-    theory_id: 3611
-  - title: HTTP messages
-    theory_id: 6752
-  - title: REST
-    theory_id: 7834
   - title: Introduction to Spring Web MVC
     theory_id: 13611
   - title: Using Spring MVC
     theory_id: 28136
+  - title: HTTP messages
+    theory_id: 6752
+  - title: REST
+    theory_id: 7834
   - title: Introduction to Spring Data
     theory_id: 16299
   - title: CRUD repositories
@@ -253,20 +253,20 @@ topics:
     theory_id: 9640
   - title: YAML
     theory_id: 12722
+  - title: Introduction to software architecture
+    theory_id: 15368
   - title: "Synchronous, asynchronous, parallel"
     theory_id: 9332
   - title: Processes and threads
     theory_id: 9420
   - title: XML
     theory_id: 6901
-  - title: Introduction to software architecture
-    theory_id: 15368
-  - title: Design principles
-    theory_id: 8956
   - title: JSON
     theory_id: 6854
   - title: Data and object mapping
     theory_id: 8262
+  - title: Design principles
+    theory_id: 8956
   - title: Introduction to logging
     theory_id: 5538
   - title: Debugging techniques
@@ -293,6 +293,8 @@ topics:
     theory_id: 3581
   - title: The Set interface
     theory_id: 3575
+  - title: MVC
+    theory_id: 17197
   - title: Threads as objects
     theory_id: 4875
   - title: Custom threads
@@ -307,8 +309,6 @@ topics:
     theory_id: 3557
   - title: Collections and thread-safety
     theory_id: 4984
-  - title: MVC
-    theory_id: 17197
   - title: "Hashing: overview"
     theory_id: 9831
   - title: Hash function
@@ -356,6 +356,10 @@ topics:
   - title: Boxing and unboxing
     theory_id: 3595
   1:
+  - title: Transaction management
+    theory_id: 28141
+  - title: Property expressions
+    theory_id: 28236
   - title: Intro to H2 database
     theory_id: 27725
   - title: Relational databases with Spring Data
@@ -368,33 +372,91 @@ topics:
     theory_id: 13785
   - title: What is SQL
     theory_id: 7054
+  - title: Basic data types
+    theory_id: 7123
+  - title: Literals
+    theory_id: 7400
+  - title: Arithmetic expressions
+    theory_id: 7409
+  - title: Basic CREATE statement
+    theory_id: 9084
+  - title: Basic SELECT statement
+    theory_id: 7392
+  - title: SELECT FROM statement
+    theory_id: 8611
+  - title: Logic and comparison expressions
+    theory_id: 8619
+  - title: The NULL value
+    theory_id: 7907
+  - title: Special WHERE operators
+    theory_id: 10521
   - title: Intro to MySQL
     theory_id: 16662
+  - title: Basic INSERT statement
+    theory_id: 9059
+  - title: Basic DELETE statement
+    theory_id: 9075
   - title: Object-Relational Mapping (ORM)
     theory_id: 8312
   - title: Introduction to JPA
     theory_id: 17125
+  - title: Introduction to transactions
+    theory_id: 12144
+  - title: Understanding Transactions
+    theory_id: 12357
   - title: Introduction to PostgreSQL
     theory_id: 17974
-  2:
+  - title: LocalDate
+    theory_id: 3592
+  - title: Method references
+    theory_id: 3620
+  - title: Functional interfaces
+    theory_id: 11636
+  - title: Standard functional interfaces
+    theory_id: 3623
+  - title: Optional
+    theory_id: 9699
   - title: Entities
     theory_id: 18135
+  - title: Anonymous classes
+    theory_id: 11896
+  - title: Default methods
+    theory_id: 11354
+  2:
   - title: JPA relationships
     theory_id: 17787
   - title: Cascade operations
     theory_id: 27502
   - title: Many-to-many relationships
-    theory_id: 19541
+    theory_id: 28231
   3:
   - title: POST vs. PUT requests
     theory_id: 27497
   - title: Inner classes
     theory_id: 11505
   4:
+  - title: Pagination and sorting
+    theory_id: 25602
+  - title: Custom queries with @Query
+    theory_id: 27291
   - title: IP
     theory_id: 13662
+  - title: Stack
+    theory_id: 5252
+  - title: Results ordering
+    theory_id: 8627
+  - title: Queue
+    theory_id: 28474
+  - title: Deque
+    theory_id: 18635
+  - title: Limit and Offset
+    theory_id: 18793
   - title: Single Responsibility Principle
     theory_id: 8963
+  - title: Stack
+    theory_id: 20203
+  - title: Iterator and Iterable
+    theory_id: 3574
   5:
   - title: Introduction to creational patterns
     theory_id: 16251

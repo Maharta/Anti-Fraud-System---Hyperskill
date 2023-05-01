@@ -1956,9 +1956,6 @@ files:
 
     }
   learner_created: true
-- name: src/antifraud/presentation/DTO/transaction/TransactionDTO.java
-  visible: true
-  learner_created: true
 - name: src/antifraud/presentation/DTO/ip/IPResponseDTO.java
   visible: true
   learner_created: true
@@ -1998,15 +1995,24 @@ files:
 - name: src/antifraud/business/services/CardService.java
   visible: true
   learner_created: true
-- name: src/antifraud/business/exception/InvalidCardNumberException.java
-  visible: true
-  learner_created: true
 - name: src/antifraud/presentation/validation/ValidCardNumber.java
   visible: true
   learner_created: true
 - name: src/antifraud/presentation/validation/CardNumberValidator.java
   visible: true
   learner_created: true
+- name: src/antifraud/presentation/DTO/transaction/TransactionResponseDTO.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/presentation/DTO/transaction/TransactionRequestDTO.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/business/model/enums/TransactionReason.java
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/18070#comment
-status: Unchecked
-record: -1
+status: Solved
+feedback:
+  message: Congratulations!
+  time: "Wed, 26 Apr 2023 02:29:28 UTC"
+record: 4
