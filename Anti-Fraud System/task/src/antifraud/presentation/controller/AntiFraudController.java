@@ -59,7 +59,7 @@ public class AntiFraudController {
     public ResponseEntity<StatusResponseDTO> removeSuspiciousIP(@PathVariable("ip") @ValidIP String ipAddress) {
         ipService.deleteSuspiciousIP(ipAddress);
 
-        return new ResponseEntity<>(new StatusResponseDTO("IP %s successfully removed".formatted(ipAddress)), HttpStatus.OK);
+        return new ResponseEntity<>(new StatusResponseDTO("IP %s successfully removed!".formatted(ipAddress)), HttpStatus.OK);
     }
 
     @GetMapping("/api/antifraud/stolencard")

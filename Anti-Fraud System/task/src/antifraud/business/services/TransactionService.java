@@ -2,7 +2,7 @@ package antifraud.business.services;
 
 import antifraud.business.model.entity.IP;
 import antifraud.business.model.entity.StolenCard;
-import antifraud.business.model.enums.ProhibitedReason;
+import antifraud.business.model.enums.TransactionReason;
 import antifraud.business.model.enums.TransactionStatus;
 import antifraud.persistence.IPRepository;
 import antifraud.persistence.StolenCardRepository;
@@ -50,16 +50,17 @@ public class TransactionService {
         if (transaction.amount() > 1500 || isIPBlacklisted || isCardBlacklisted) {
             transactionResponseDTO.setResult(TransactionStatus.PROHIBITED);
             if (transaction.amount() > 1500) {
-                transactionResponseDTO.addProhibitedReason(ProhibitedReason.AMOUNT);
+                transactionResponseDTO.addReason(TransactionReason.AMOUNT);
             }
             if (isCardBlacklisted) {
-                transactionResponseDTO.addProhibitedReason(ProhibitedReason.CARD_NUMBER);
+                transactionResponseDTO.addReason(TransactionReason.CARD_NUMBER);
             }
             if (isIPBlacklisted) {
-                transactionResponseDTO.addProhibitedReason(ProhibitedReason.IP);
+                transactionResponseDTO.addReason(TransactionReason.IP);
             }
         } else if (transaction.amount() <= 1500 && transaction.amount() > 200) {
             transactionResponseDTO.setResult(TransactionStatus.MANUAL_PROCESSING);
+            transactionResponseDTO.addReason(TransactionReason.AMOUNT);
         } else {
             transactionResponseDTO.setResult(TransactionStatus.ALLOWED);
         }

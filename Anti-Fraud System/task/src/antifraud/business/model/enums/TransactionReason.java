@@ -1,5 +1,5 @@
 package antifraud.business.model.enums;
 
-public enum ProhibitedReason {
+public enum TransactionReason {
     AMOUNT, CARD_NUMBER, IP
 }
