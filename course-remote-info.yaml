@@ -3,7 +3,7 @@ hyperskill_project:
   ide_files: https://stepik.org/media/attachments/lesson/657120/additional_files.json
   is_template_based: false
   use_ide: true
-update_date: "Mon, 01 May 2023 13:26:12 UTC"
+update_date: "Wed, 10 May 2023 09:23:48 UTC"
 stages:
 - id: 1161
   step: 18067
@@ -37,10 +37,10 @@ topics:
     theory_id: 8977
   - title: Parameters and Options
     theory_id: 9746
-  - title: World Wide Web
-    theory_id: 6633
   - title: Computer algorithms
     theory_id: 16547
+  - title: World Wide Web
+    theory_id: 6633
   - title: HyperText Transfer Protocol
     theory_id: 6569
   - title: Immutability
@@ -386,16 +386,16 @@ topics:
     theory_id: 8611
   - title: Logic and comparison expressions
     theory_id: 8619
+  - title: Basic INSERT statement
+    theory_id: 9059
+  - title: Basic DELETE statement
+    theory_id: 9075
   - title: The NULL value
     theory_id: 7907
   - title: Special WHERE operators
     theory_id: 10521
   - title: Intro to MySQL
     theory_id: 16662
-  - title: Basic INSERT statement
-    theory_id: 9059
-  - title: Basic DELETE statement
-    theory_id: 9075
   - title: Object-Relational Mapping (ORM)
     theory_id: 8312
   - title: Introduction to JPA

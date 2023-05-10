@@ -1,3 +1,5 @@
 content:
 - LocalDate
 - Optional
+- Stack
+- Iterator and Iterable
