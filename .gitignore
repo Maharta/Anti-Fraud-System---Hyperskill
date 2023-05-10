@@ -10,7 +10,6 @@ out/
 *.ipr
 
 # Gradle build files
-build.gradle
 build.gradle.kts
 gradle/
 .gradle/
