@@ -6,24 +6,27 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class TransactionResponseDTO {
     @JsonIgnore
     private final List<TransactionReason> transactionReasons;
 
-    private TransactionStatus result;
+    @JsonProperty("result")
+    private TransactionStatus status;
 
     public TransactionResponseDTO() {
         this.transactionReasons = new ArrayList<>();
     }
 
-    public TransactionStatus getResult() {
-        return result;
+    public TransactionStatus getStatus() {
+        return status;
     }
 
-    public void setResult(TransactionStatus result) {
-        this.result = result;
+    public void setStatus(TransactionStatus result) {
+        this.status = result;
     }
 
     public void addReason(TransactionReason prohibitedReason) {
@@ -35,17 +38,12 @@ public class TransactionResponseDTO {
         if (transactionReasons.isEmpty()) {
             return "none";
         }
-
         StringBuilder infoBuilder = new StringBuilder();
+        Collections.sort(transactionReasons);
+
         for (int i = 0; i < transactionReasons.size(); i++) {
             TransactionReason prohibitedReason = transactionReasons.get(i);
-            String currentInfo;
-            if (prohibitedReason.equals(TransactionReason.CARD_NUMBER)) {
-                currentInfo = "card-number";
-            } else {
-                currentInfo = prohibitedReason.name().toLowerCase();
-            }
-
+            String currentInfo = prohibitedReason.name().toLowerCase().replace('_', '-');
             if (i == transactionReasons.size() - 1) {
                 infoBuilder.append(currentInfo);
             } else {

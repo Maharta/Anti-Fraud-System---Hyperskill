@@ -39,7 +39,7 @@ public class AntiFraudController {
 
     @PostMapping("/api/antifraud/transaction")
     public ResponseEntity<TransactionResponseDTO> checkFraud(@RequestBody @Valid TransactionRequestDTO transaction) {
-        TransactionResponseDTO transactionResponseDTO = transactionService.checkFraud(transaction);
+        TransactionResponseDTO transactionResponseDTO = transactionService.beginTransaction(transaction);
         return new ResponseEntity<>(transactionResponseDTO, HttpStatus.OK);
     }
 
