@@ -2819,9 +2819,24 @@ files:
 - name: src/antifraud/persistence/TransactionRepository.java
   visible: true
   learner_created: true
+- name: src/antifraud/presentation/controller/TransactionController.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/presentation/DTO/user/delete/DeleteResponse.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/business/exception/UsernameTakenException.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/business/exception/UserNotFoundException.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/presentation/DTO/user/update/UpdateStatusRequest.java
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/18071#comment
 status: Solved
 feedback:
   message: Congratulations!
-  time: "Sun, 14 May 2023 00:43:49 UTC"
+  time: "Sun, 14 May 2023 01:39:20 UTC"
 record: 1
