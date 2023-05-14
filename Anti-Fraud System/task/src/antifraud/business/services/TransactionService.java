@@ -14,7 +14,10 @@ import antifraud.presentation.DTO.transaction.TransactionResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 
 @Service
@@ -57,35 +60,27 @@ public class TransactionService {
         TransactionResponseDTO transactionResponseDTO = new TransactionResponseDTO();
         boolean isIPBlacklisted = checkIfIPBlacklisted(transactionRequest.ip());
         boolean isCardBlacklisted = checkIfCardBlacklisted(transactionRequest.number());
+        
+        List<Transaction.RegionAndIP> lastHourRegionAndIp = transactionRepository.
+                findAllDistinctRegionAndIPTransactionBetweenDateTime(
+                        transactionRequest.dateTime().minusHours(1),
+                        transactionRequest.dateTime(),
+                        transactionRequest.number()
+                );
 
+        Set<Region> regionSet = new HashSet<>();
+        Set<String> ipSet = new HashSet<>();
 
-        List<Transaction> lastHourTransactionList = transactionRepository.findAllTransactionByNumberBetweenDatetime(
-                transactionRequest.dateTime().minusHours(1),
-                transactionRequest.dateTime(),
-                transactionRequest.number()
-        );
+        lastHourRegionAndIp.forEach((regionAndIP -> {
+            regionSet.add(regionAndIP.getRegion());
+            ipSet.add(regionAndIP.getIp());
+        }));
 
-        Set<String> sameIpSet = new HashSet<>();
-        List<Transaction> distinctIPTransaction = lastHourTransactionList.stream().filter(e -> sameIpSet.add(e.getIp())).toList();
+        regionSet.remove(transactionRequest.region());
+        ipSet.remove(transactionRequest.ip());
 
-        Set<Region> sameRegionSet = new HashSet<>();
-        List<Transaction> distinctRegionTransaction = lastHourTransactionList.stream().filter(e -> sameRegionSet.add(e.getRegion())).toList();
-
-        int distinctIPTransactionCount = 0;
-        int distinctRegionTransactionCount = 0;
-
-        for (Transaction transaction : distinctIPTransaction) {
-            if (!Objects.equals(transaction.getIp(), transactionRequest.ip())) {
-                distinctIPTransactionCount++;
-            }
-        }
-        for (Transaction transaction : distinctRegionTransaction) {
-            if (!Objects.equals(transaction.getRegion(), transactionRequest.region())) {
-                distinctRegionTransactionCount++;
-            }
-        }
-        System.out.println(distinctIPTransactionCount);
-        System.out.println(distinctRegionTransactionCount);
+        int distinctRegionTransactionCount = regionSet.size();
+        int distinctIPTransactionCount = ipSet.size();
 
         if (isIPBlacklisted || isCardBlacklisted || transactionRequest.amount() > 1500
                 || distinctIPTransactionCount > 2 || distinctRegionTransactionCount > 2) {
