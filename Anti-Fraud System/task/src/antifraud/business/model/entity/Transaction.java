@@ -13,29 +13,36 @@ public class Transaction {
     @Column
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
+
     @Column
     private long amount;
+
     @Column
     private String ip;
-    @Column
-    private String number;
+
     @Enumerated(EnumType.STRING)
     private Region region;
+
     @Column
     private LocalDateTime dateTime;
+
     @Enumerated(EnumType.STRING)
     private TransactionStatus status;
+
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "card_number", referencedColumnName = "number")
+    private Card card;
 
     public Transaction() {
     }
 
-    public Transaction(long amount, String ip, String number, Region region, LocalDateTime dateTime, TransactionStatus status) {
+    public Transaction(long amount, String ip, Region region, LocalDateTime dateTime, TransactionStatus status, Card card) {
         this.amount = amount;
         this.ip = ip;
-        this.number = number;
         this.region = region;
         this.dateTime = dateTime;
         this.status = status;
+        this.card = card;
     }
 
     @Override
@@ -44,7 +51,7 @@ public class Transaction {
                 "id=" + id +
                 ", amount=" + amount +
                 ", ip='" + ip + '\'' +
-                ", number='" + number + '\'' +
+                ", number='" + card.getNumber() + '\'' +
                 ", region=" + region +
                 ", dateTime=" + dateTime +
                 ", status=" + status +
@@ -63,8 +70,8 @@ public class Transaction {
         return ip;
     }
 
-    public String getNumber() {
-        return number;
+    public Card getCard() {
+        return card;
     }
 
     public Region getRegion() {

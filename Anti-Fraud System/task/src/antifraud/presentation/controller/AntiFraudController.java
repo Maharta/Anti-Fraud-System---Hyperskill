@@ -2,8 +2,8 @@ package antifraud.presentation.controller;
 
 import antifraud.business.model.entity.IP;
 import antifraud.business.model.entity.StolenCard;
-import antifraud.business.services.CardService;
 import antifraud.business.services.IPService;
+import antifraud.business.services.StolenCardService;
 import antifraud.business.services.TransactionService;
 import antifraud.presentation.DTO.StatusResponseDTO;
 import antifraud.presentation.DTO.card.StolenCardRequestDTO;
@@ -28,10 +28,10 @@ import java.util.List;
 public class AntiFraudController {
     private final TransactionService transactionService;
     private final IPService ipService;
-    private final CardService cardService;
+    private final StolenCardService cardService;
 
     @Autowired
-    public AntiFraudController(TransactionService transactionService, IPService ipService, CardService cardService) {
+    public AntiFraudController(TransactionService transactionService, IPService ipService, StolenCardService cardService) {
         this.transactionService = transactionService;
         this.ipService = ipService;
         this.cardService = cardService;
