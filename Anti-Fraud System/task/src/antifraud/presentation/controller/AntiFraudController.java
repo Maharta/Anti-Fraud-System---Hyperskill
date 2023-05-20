@@ -10,6 +10,7 @@ import antifraud.presentation.DTO.card.StolenCardRequestDTO;
 import antifraud.presentation.DTO.card.StolenCardResponseDTO;
 import antifraud.presentation.DTO.ip.IPRequestDTO;
 import antifraud.presentation.DTO.ip.IPResponseDTO;
+import antifraud.presentation.DTO.transaction.TransactionDTO;
 import antifraud.presentation.DTO.transaction.TransactionRequestDTO;
 import antifraud.presentation.DTO.transaction.TransactionResponseDTO;
 import antifraud.presentation.validation.ValidCardNumber;
@@ -35,6 +36,12 @@ public class AntiFraudController {
         this.transactionService = transactionService;
         this.ipService = ipService;
         this.cardService = cardService;
+    }
+
+    @GetMapping("/api/antifraud/history/{number}")
+    public ResponseEntity<List<TransactionDTO>> getNumberTransactionHistory(@PathVariable("number") @ValidCardNumber String number) {
+        List<TransactionDTO> transactionHistory = transactionService.getNumberTransactionHistory(number);
+        return new ResponseEntity<>(transactionHistory, HttpStatus.OK);
     }
 
     @PostMapping("/api/antifraud/transaction")

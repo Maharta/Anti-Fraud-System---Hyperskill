@@ -2,6 +2,7 @@ package antifraud.business.model.entity;
 
 import antifraud.business.model.enums.Region;
 import antifraud.business.model.enums.TransactionStatus;
+import antifraud.presentation.DTO.transaction.TransactionDTO;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -15,7 +16,7 @@ public class Transaction {
     private long id;
 
     @Column
-    private long amount;
+    private int amount;
 
     @Column
     private String ip;
@@ -29,6 +30,9 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     private TransactionStatus status;
 
+    @Enumerated(EnumType.STRING)
+    private TransactionStatus feedback;
+
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "card_number", referencedColumnName = "number")
     private Card card;
@@ -36,13 +40,14 @@ public class Transaction {
     public Transaction() {
     }
 
-    public Transaction(long amount, String ip, Region region, LocalDateTime dateTime, TransactionStatus status, Card card) {
+    public Transaction(int amount, String ip, Region region, LocalDateTime dateTime, TransactionStatus status, Card card) {
         this.amount = amount;
         this.ip = ip;
         this.region = region;
         this.dateTime = dateTime;
         this.status = status;
         this.card = card;
+        feedback = null;
     }
 
     @Override
@@ -56,6 +61,11 @@ public class Transaction {
                 ", dateTime=" + dateTime +
                 ", status=" + status +
                 '}';
+    }
+
+    public TransactionDTO toDTO() {
+        return new TransactionDTO(id, amount, ip, card.getNumber(),
+                region, dateTime, status, feedback);
     }
 
     public long getId() {

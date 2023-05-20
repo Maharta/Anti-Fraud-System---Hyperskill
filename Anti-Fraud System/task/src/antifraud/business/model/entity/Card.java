@@ -3,14 +3,14 @@ package antifraud.business.model.entity;
 
 import antifraud.presentation.validation.ValidCardNumber;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity(name = "card")
-public class Card {
+public class Card implements Serializable {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
     @Column
@@ -36,15 +36,31 @@ public class Card {
         return id;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public String getNumber() {
         return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
     }
 
     public int getMaxAllowed() {
         return maxAllowed;
     }
 
+    public void setMaxAllowed(int maxAllowed) {
+        this.maxAllowed = maxAllowed;
+    }
+
     public int getMaxManual() {
         return maxManual;
+    }
+
+    public void setMaxManual(int maxManual) {
+        this.maxManual = maxManual;
     }
 }

@@ -6,6 +6,7 @@ import antifraud.business.model.enums.Region;
 import antifraud.business.model.enums.TransactionReason;
 import antifraud.business.model.enums.TransactionStatus;
 import antifraud.persistence.TransactionRepository;
+import antifraud.presentation.DTO.transaction.TransactionDTO;
 import antifraud.presentation.DTO.transaction.TransactionRequestDTO;
 import antifraud.presentation.DTO.transaction.TransactionResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,11 @@ public class TransactionService {
         this.stolenCardService = stolenCardService;
         this.ipService = ipService;
         this.transactionRepository = transactionRepository;
+    }
+
+    public List<TransactionDTO> getNumberTransactionHistory(String number) {
+        List<Transaction> transactions = transactionRepository.findAllTransactionByNumber(number);
+        return transactions.stream().map(Transaction::toDTO).toList();
     }
 
     public TransactionResponseDTO beginTransaction(TransactionRequestDTO transactionRequest) {

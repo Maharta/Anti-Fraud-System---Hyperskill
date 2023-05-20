@@ -25,5 +25,9 @@ public interface TransactionRepository extends CrudRepository<Transaction, Long>
                                                                                        @Param("endTime") LocalDateTime endTime,
                                                                                        @Param("number") String number);
 
+    @Query("SELECT t FROM Transaction t JOIN t.card c " +
+            "WHERE c.number = :number")
+    List<Transaction> findAllTransactionByNumber(@Param("number") String number);
+
     <S extends Transaction> S save(S entity);
 }
