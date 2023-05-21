@@ -3486,67 +3486,6 @@ files:
 
     }
   learner_created: true
-- name: src/antifraud/business/services/CardService.java
-  visible: true
-  text: |
-    package antifraud.business.services;
-
-    import antifraud.business.exception.EntityNotFoundException;
-    import antifraud.business.model.entity.StolenCard;
-    import antifraud.persistence.StolenCardRepository;
-    import antifraud.presentation.DTO.card.StolenCardRequestDTO;
-    import antifraud.presentation.DTO.card.StolenCardResponseDTO;
-    import org.springframework.beans.factory.annotation.Autowired;
-    import org.springframework.stereotype.Service;
-
-    import javax.persistence.EntityExistsException;
-    import java.util.ArrayList;
-    import java.util.List;
-    import java.util.Optional;
-
-    @Service
-    public class CardService {
-        private final StolenCardRepository stolenCardRepository;
-
-        @Autowired
-        public CardService(StolenCardRepository stolenCardRepository) {
-            this.stolenCardRepository = stolenCardRepository;
-        }
-
-        public StolenCard saveCardAsStolen(StolenCardRequestDTO stolenCardRequestDTO) {
-            Optional<StolenCard> cardInDB = stolenCardRepository.findByNumber(stolenCardRequestDTO.number());
-
-            if (cardInDB.isPresent()) {
-                throw new EntityExistsException("Card with number %s already exists!".formatted(stolenCardRequestDTO.number()));
-            }
-
-            return stolenCardRepository.save(new StolenCard(stolenCardRequestDTO.number()));
-        }
-
-        public void deleteCardByNumber(String cardNumber) {
-            Optional<StolenCard> stolenCard = stolenCardRepository.findByNumber(cardNumber);
-
-            if (stolenCard.isEmpty()) {
-                throw new EntityNotFoundException("Card with number %s does not exists!".formatted(cardNumber));
-            }
-
-            stolenCardRepository.delete(stolenCard.get());
-        }
-
-
-        public List<StolenCardResponseDTO> getAllStolenCards() {
-            Iterable<StolenCard> stolenCards = stolenCardRepository.findAll();
-
-            List<StolenCardResponseDTO> stolenCardResponseDTOList = new ArrayList<>();
-            for (StolenCard stolenCard : stolenCards) {
-                stolenCardResponseDTOList.add(new StolenCardResponseDTO(stolenCard.getId(), stolenCard.getNumber()));
-            }
-
-            return stolenCardResponseDTOList;
-
-        }
-    }
-  learner_created: true
 - name: src/antifraud/persistence/RoleRepository.java
   visible: true
   text: |
@@ -3786,20 +3725,94 @@ files:
         }
     }
   learner_created: true
-feedback_link: https://hyperskill.org/learn/step/18072#comment
-status: Failed
-feedback:
-  message: |-
-    Wrong answer in test #12
+- name: src/antifraud/business/model/entity/Card.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/persistence/CardRepository.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/business/services/StolenCardService.java
+  visible: true
+  text: |
+    package antifraud.business.services;
 
-    GET /api/antifraud/history should respond with status code 200, responded: 404
-    Response body:
-    {
-      &quot;timestamp&quot; : &quot;2023-05-14T00:41:53.638+00:00&quot;,
-      &quot;status&quot; : 404,
-      &quot;error&quot; : &quot;Not Found&quot;,
-      &quot;message&quot; : &quot;No message available&quot;,
-      &quot;path&quot; : &quot;/api/antifraud/history&quot;
+    import antifraud.business.exception.EntityNotFoundException;
+    import antifraud.business.model.entity.StolenCard;
+    import antifraud.persistence.StolenCardRepository;
+    import antifraud.presentation.DTO.card.StolenCardRequestDTO;
+    import antifraud.presentation.DTO.card.StolenCardResponseDTO;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.stereotype.Service;
+
+    import javax.persistence.EntityExistsException;
+    import java.util.ArrayList;
+    import java.util.List;
+    import java.util.Optional;
+
+    @Service
+    public class CardService {
+        private final StolenCardRepository stolenCardRepository;
+
+        @Autowired
+        public CardService(StolenCardRepository stolenCardRepository) {
+            this.stolenCardRepository = stolenCardRepository;
+        }
+
+        public StolenCard saveCardAsStolen(StolenCardRequestDTO stolenCardRequestDTO) {
+            Optional<StolenCard> cardInDB = stolenCardRepository.findByNumber(stolenCardRequestDTO.number());
+
+            if (cardInDB.isPresent()) {
+                throw new EntityExistsException("Card with number %s already exists!".formatted(stolenCardRequestDTO.number()));
+            }
+
+            return stolenCardRepository.save(new StolenCard(stolenCardRequestDTO.number()));
+        }
+
+        public void deleteCardByNumber(String cardNumber) {
+            Optional<StolenCard> stolenCard = stolenCardRepository.findByNumber(cardNumber);
+
+            if (stolenCard.isEmpty()) {
+                throw new EntityNotFoundException("Card with number %s does not exists!".formatted(cardNumber));
+            }
+
+            stolenCardRepository.delete(stolenCard.get());
+        }
+
+
+        public List<StolenCardResponseDTO> getAllStolenCards() {
+            Iterable<StolenCard> stolenCards = stolenCardRepository.findAll();
+
+            List<StolenCardResponseDTO> stolenCardResponseDTOList = new ArrayList<>();
+            for (StolenCard stolenCard : stolenCards) {
+                stolenCardResponseDTOList.add(new StolenCardResponseDTO(stolenCard.getId(), stolenCard.getNumber()));
+            }
+
+            return stolenCardResponseDTOList;
+
+        }
     }
-  time: "Sun, 14 May 2023 00:41:54 UTC"
-record: -1
+  learner_created: true
+- name: src/antifraud/business/services/CardService.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/presentation/DTO/transaction/TransactionDTO.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/presentation/jackson/serializers/NullAsEmptyStringSerializer.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/presentation/DTO/transaction/TransactionFeedbackDTO.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/business/exception/UnprocessableEntityException.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/business/exception/FeedbackConflictException.java
+  visible: true
+  learner_created: true
+feedback_link: https://hyperskill.org/learn/step/18072#comment
+status: Solved
+feedback:
+  message: Congratulations!
+  time: "Sat, 20 May 2023 09:59:09 UTC"
+record: 3

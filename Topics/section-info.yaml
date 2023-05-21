@@ -3,3 +3,5 @@ content:
 - Optional
 - Stack
 - Iterator and Iterable
+- Generic methods
+- Function composition
