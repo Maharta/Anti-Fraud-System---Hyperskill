@@ -1,5 +1,8 @@
 package antifraud.business.services;
 
+import antifraud.business.exception.EntityNotFoundException;
+import antifraud.business.exception.FeedbackConflictException;
+import antifraud.business.exception.UnprocessableEntityException;
 import antifraud.business.model.entity.Card;
 import antifraud.business.model.entity.Transaction;
 import antifraud.business.model.enums.Region;
@@ -7,14 +10,13 @@ import antifraud.business.model.enums.TransactionReason;
 import antifraud.business.model.enums.TransactionStatus;
 import antifraud.persistence.TransactionRepository;
 import antifraud.presentation.DTO.transaction.TransactionDTO;
+import antifraud.presentation.DTO.transaction.TransactionFeedbackDTO;
 import antifraud.presentation.DTO.transaction.TransactionRequestDTO;
 import antifraud.presentation.DTO.transaction.TransactionResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 @Service
@@ -34,6 +36,14 @@ public class TransactionService {
         this.stolenCardService = stolenCardService;
         this.ipService = ipService;
         this.transactionRepository = transactionRepository;
+    }
+
+
+    public List<TransactionDTO> getTransactionHistory() {
+        Iterable<Transaction> transactions = transactionRepository.findAll();
+        List<TransactionDTO> transactionHistory = new ArrayList<>();
+        transactions.forEach(transaction -> transactionHistory.add(transaction.toDTO()));
+        return transactionHistory;
     }
 
     public List<TransactionDTO> getNumberTransactionHistory(String number) {
@@ -63,6 +73,68 @@ public class TransactionService {
         return transactionResponseDTO;
     }
 
+
+    public TransactionDTO updateTransactionWithFeedback(TransactionFeedbackDTO transactionFeedbackDTO) {
+        Optional<Transaction> optionalTransaction = transactionRepository.findById(transactionFeedbackDTO.transactionId());
+
+        if (optionalTransaction.isEmpty()) {
+            throw new EntityNotFoundException("Transaction with id " + transactionFeedbackDTO.transactionId() + " could not be found");
+        }
+
+        Transaction transaction = optionalTransaction.get();
+
+        System.out.println(transaction);
+
+        if (transaction.getFeedback() != null) {
+            throw new FeedbackConflictException(String.format("Transaction with id %d already has a feedback.", transactionFeedbackDTO.transactionId()));
+        }
+
+        if (transactionFeedbackDTO.feedback() == transaction.getStatus()) {
+            throw new UnprocessableEntityException(String.format("Transaction with id %d already have a status of %s",
+                    transactionFeedbackDTO.transactionId(), transactionFeedbackDTO.feedback()));
+        }
+
+        Card transactionCard = transaction.getCard();
+
+        switch (transaction.getStatus()) {
+            case ALLOWED -> {
+                if (transactionFeedbackDTO.feedback() == TransactionStatus.MANUAL_PROCESSING) {
+                    transactionCard.setMaxAllowed(decreaseLimit(transactionCard.getMaxAllowed(), transaction.getAmount()));
+                }
+
+                if (transactionFeedbackDTO.feedback() == TransactionStatus.PROHIBITED) {
+                    transactionCard.setMaxAllowed(decreaseLimit(transactionCard.getMaxAllowed(), transaction.getAmount()));
+                    transactionCard.setMaxManual(decreaseLimit(transactionCard.getMaxManual(), transaction.getAmount()));
+                }
+            }
+            case MANUAL_PROCESSING -> {
+                if (transactionFeedbackDTO.feedback() == TransactionStatus.ALLOWED) {
+                    transactionCard.setMaxAllowed(increaseLimit(transactionCard.getMaxAllowed(), transaction.getAmount()));
+                }
+
+                if (transactionFeedbackDTO.feedback() == TransactionStatus.PROHIBITED) {
+                    transactionCard.setMaxManual(decreaseLimit(transactionCard.getMaxManual(), transaction.getAmount()));
+                }
+            }
+            case PROHIBITED -> {
+                if (transactionFeedbackDTO.feedback() == TransactionStatus.ALLOWED) {
+                    transactionCard.setMaxAllowed(increaseLimit(transactionCard.getMaxAllowed(), transaction.getAmount()));
+                    transactionCard.setMaxManual(increaseLimit(transactionCard.getMaxManual(), transaction.getAmount()));
+                }
+
+                if (transactionFeedbackDTO.feedback() == TransactionStatus.MANUAL_PROCESSING) {
+                    transactionCard.setMaxManual(increaseLimit(transactionCard.getMaxManual(), transaction.getAmount()));
+                }
+            }
+        }
+
+        transaction.setFeedback(transactionFeedbackDTO.feedback());
+
+        transactionRepository.save(transaction);
+
+        return transaction.toDTO();
+    }
+
     private TransactionResponseDTO getTransactionResponse(TransactionRequestDTO transactionRequest, Card card) {
         TransactionResponseDTO transactionResponseDTO = new TransactionResponseDTO();
         boolean isIPBlacklisted = ipService.isIPBlacklisted(transactionRequest.ip());
@@ -88,7 +160,7 @@ public class TransactionService {
 
         int distinctRegionTransactionCount = regionSet.size();
         int distinctIPTransactionCount = ipSet.size();
-
+        
         if (isIPBlacklisted || isCardBlacklisted || transactionRequest.amount() > card.getMaxManual()
                 || distinctIPTransactionCount > 2 || distinctRegionTransactionCount > 2) {
             transactionResponseDTO.setStatus(TransactionStatus.PROHIBITED);
@@ -101,15 +173,15 @@ public class TransactionService {
 
         addTransactionReason(transactionResponseDTO, transactionRequest.amount(),
                 isIPBlacklisted, isCardBlacklisted,
-                distinctIPTransactionCount, distinctRegionTransactionCount);
+                distinctIPTransactionCount, distinctRegionTransactionCount, card);
 
         return transactionResponseDTO;
     }
 
     private void addTransactionReason(
             TransactionResponseDTO transactionResponseDTO, long amount, boolean isIPBlacklisted,
-            boolean isCardBlacklisted, int distinctIPTransactionCount, int distinctRegionTransactionCount
-    ) {
+            boolean isCardBlacklisted, int distinctIPTransactionCount, int distinctRegionTransactionCount,
+            Card card) {
 
         if (transactionResponseDTO.getStatus() == TransactionStatus.ALLOWED) {
             return;
@@ -132,13 +204,13 @@ public class TransactionService {
                 transactionResponseDTO.addReason(TransactionReason.REGION_CORRELATION);
             }
 
-            if (amount > 1500) {
+            if (amount > card.getMaxManual()) {
                 transactionResponseDTO.addReason(TransactionReason.AMOUNT);
             }
 
 
         } else {
-            if (amount > 200) {
+            if (amount > card.getMaxAllowed()) {
                 transactionResponseDTO.addReason(TransactionReason.AMOUNT);
             }
 
@@ -155,5 +227,12 @@ public class TransactionService {
     }
 
 
+    private int increaseLimit(int currentLimit, int transactionValue) {
+        return (int) Math.ceil(0.8 * currentLimit + 0.2 * transactionValue);
+    }
+
+    private int decreaseLimit(int currentLimit, int transactionValue) {
+        return (int) Math.ceil(0.8 * currentLimit - 0.2 * transactionValue);
+    }
 }
 

@@ -72,7 +72,7 @@ public class Transaction {
         return id;
     }
 
-    public long getAmount() {
+    public int getAmount() {
         return amount;
     }
 
@@ -94,6 +94,14 @@ public class Transaction {
 
     public TransactionStatus getStatus() {
         return status;
+    }
+
+    public TransactionStatus getFeedback() {
+        return feedback;
+    }
+
+    public void setFeedback(TransactionStatus feedback) {
+        this.feedback = feedback;
     }
 
     public interface RegionAndIP {

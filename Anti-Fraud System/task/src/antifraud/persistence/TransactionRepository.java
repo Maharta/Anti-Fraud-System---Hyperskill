@@ -30,4 +30,6 @@ public interface TransactionRepository extends CrudRepository<Transaction, Long>
     List<Transaction> findAllTransactionByNumber(@Param("number") String number);
 
     <S extends Transaction> S save(S entity);
+
+    Iterable<Transaction> findAll();
 }
