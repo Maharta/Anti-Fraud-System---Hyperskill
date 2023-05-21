@@ -2,6 +2,7 @@ package antifraud.business.model.entity;
 
 import antifraud.business.model.enums.Region;
 import antifraud.business.model.enums.TransactionStatus;
+import antifraud.presentation.DTO.transaction.TransactionDTO;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -13,29 +14,40 @@ public class Transaction {
     @Column
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
+
     @Column
-    private long amount;
+    private int amount;
+
     @Column
     private String ip;
-    @Column
-    private String number;
+
     @Enumerated(EnumType.STRING)
     private Region region;
+
     @Column
     private LocalDateTime dateTime;
+
     @Enumerated(EnumType.STRING)
     private TransactionStatus status;
+
+    @Enumerated(EnumType.STRING)
+    private TransactionStatus feedback;
+
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "card_number", referencedColumnName = "number")
+    private Card card;
 
     public Transaction() {
     }
 
-    public Transaction(long amount, String ip, String number, Region region, LocalDateTime dateTime, TransactionStatus status) {
+    public Transaction(int amount, String ip, Region region, LocalDateTime dateTime, TransactionStatus status, Card card) {
         this.amount = amount;
         this.ip = ip;
-        this.number = number;
         this.region = region;
         this.dateTime = dateTime;
         this.status = status;
+        this.card = card;
+        feedback = null;
     }
 
     @Override
@@ -44,18 +56,23 @@ public class Transaction {
                 "id=" + id +
                 ", amount=" + amount +
                 ", ip='" + ip + '\'' +
-                ", number='" + number + '\'' +
+                ", number='" + card.getNumber() + '\'' +
                 ", region=" + region +
                 ", dateTime=" + dateTime +
                 ", status=" + status +
                 '}';
     }
 
+    public TransactionDTO toDTO() {
+        return new TransactionDTO(id, amount, ip, card.getNumber(),
+                region, dateTime, status, feedback);
+    }
+
     public long getId() {
         return id;
     }
 
-    public long getAmount() {
+    public int getAmount() {
         return amount;
     }
 
@@ -63,8 +80,8 @@ public class Transaction {
         return ip;
     }
 
-    public String getNumber() {
-        return number;
+    public Card getCard() {
+        return card;
     }
 
     public Region getRegion() {
@@ -77,6 +94,14 @@ public class Transaction {
 
     public TransactionStatus getStatus() {
         return status;
+    }
+
+    public TransactionStatus getFeedback() {
+        return feedback;
+    }
+
+    public void setFeedback(TransactionStatus feedback) {
+        this.feedback = feedback;
     }
 
     public interface RegionAndIP {

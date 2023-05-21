@@ -43,6 +43,10 @@ public class IPService {
         ipRepository.delete(ipToBeDeleted.get());
     }
 
+    public boolean isIPBlacklisted(String ipAddress) {
+        return ipRepository.findByIp(ipAddress).isPresent();
+    }
+
     /**
      * Directly return DTO for performance, as for now there is no difference between IP DTO and IP Entity.
      */

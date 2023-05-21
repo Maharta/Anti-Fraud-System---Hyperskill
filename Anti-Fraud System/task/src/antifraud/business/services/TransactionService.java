@@ -1,39 +1,54 @@
 package antifraud.business.services;
 
-import antifraud.business.model.entity.IP;
-import antifraud.business.model.entity.StolenCard;
+import antifraud.business.exception.EntityNotFoundException;
+import antifraud.business.exception.FeedbackConflictException;
+import antifraud.business.exception.UnprocessableEntityException;
+import antifraud.business.model.entity.Card;
 import antifraud.business.model.entity.Transaction;
 import antifraud.business.model.enums.Region;
 import antifraud.business.model.enums.TransactionReason;
 import antifraud.business.model.enums.TransactionStatus;
-import antifraud.persistence.IPRepository;
-import antifraud.persistence.StolenCardRepository;
 import antifraud.persistence.TransactionRepository;
+import antifraud.presentation.DTO.transaction.TransactionDTO;
+import antifraud.presentation.DTO.transaction.TransactionFeedbackDTO;
 import antifraud.presentation.DTO.transaction.TransactionRequestDTO;
 import antifraud.presentation.DTO.transaction.TransactionResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 
 @Service
 public class TransactionService {
 
-    private final IPRepository ipRepository;
-    private final StolenCardRepository stolenCardRepository;
+    private final CardService cardService;
+    private final StolenCardService stolenCardService;
+    private final IPService ipService;
     private final TransactionRepository transactionRepository;
 
     @Autowired
-    public TransactionService(IPRepository ipRepository,
-                              StolenCardRepository stolenCardRepository,
+    public TransactionService(CardService cardService,
+                              IPService ipService,
+                              StolenCardService stolenCardService,
                               TransactionRepository transactionRepository) {
-        this.ipRepository = ipRepository;
-        this.stolenCardRepository = stolenCardRepository;
+        this.cardService = cardService;
+        this.stolenCardService = stolenCardService;
+        this.ipService = ipService;
         this.transactionRepository = transactionRepository;
+    }
+
+
+    public List<TransactionDTO> getTransactionHistory() {
+        Iterable<Transaction> transactions = transactionRepository.findAll();
+        List<TransactionDTO> transactionHistory = new ArrayList<>();
+        transactions.forEach(transaction -> transactionHistory.add(transaction.toDTO()));
+        return transactionHistory;
+    }
+
+    public List<TransactionDTO> getNumberTransactionHistory(String number) {
+        List<Transaction> transactions = transactionRepository.findAllTransactionByNumber(number);
+        return transactions.stream().map(Transaction::toDTO).toList();
     }
 
     public TransactionResponseDTO beginTransaction(TransactionRequestDTO transactionRequest) {
@@ -41,14 +56,16 @@ public class TransactionService {
             throw new IllegalArgumentException("Transaction amount is 0 or lower than 0!");
         }
 
-        TransactionResponseDTO transactionResponseDTO = getTransactionResponse(transactionRequest);
+        Card card = cardService.getOrCreateCard(transactionRequest.number());
+
+        TransactionResponseDTO transactionResponseDTO = getTransactionResponse(transactionRequest, card);
 
         Transaction transaction = new Transaction(transactionRequest.amount(),
                 transactionRequest.ip(),
-                transactionRequest.number(),
                 transactionRequest.region(),
                 transactionRequest.dateTime(),
-                transactionResponseDTO.getStatus());
+                transactionResponseDTO.getStatus(),
+                card);
 
         transactionRepository.save(transaction);
 
@@ -56,11 +73,73 @@ public class TransactionService {
         return transactionResponseDTO;
     }
 
-    private TransactionResponseDTO getTransactionResponse(TransactionRequestDTO transactionRequest) {
+
+    public TransactionDTO updateTransactionWithFeedback(TransactionFeedbackDTO transactionFeedbackDTO) {
+        Optional<Transaction> optionalTransaction = transactionRepository.findById(transactionFeedbackDTO.transactionId());
+
+        if (optionalTransaction.isEmpty()) {
+            throw new EntityNotFoundException("Transaction with id " + transactionFeedbackDTO.transactionId() + " could not be found");
+        }
+
+        Transaction transaction = optionalTransaction.get();
+
+        System.out.println(transaction);
+
+        if (transaction.getFeedback() != null) {
+            throw new FeedbackConflictException(String.format("Transaction with id %d already has a feedback.", transactionFeedbackDTO.transactionId()));
+        }
+
+        if (transactionFeedbackDTO.feedback() == transaction.getStatus()) {
+            throw new UnprocessableEntityException(String.format("Transaction with id %d already have a status of %s",
+                    transactionFeedbackDTO.transactionId(), transactionFeedbackDTO.feedback()));
+        }
+
+        Card transactionCard = transaction.getCard();
+
+        switch (transaction.getStatus()) {
+            case ALLOWED -> {
+                if (transactionFeedbackDTO.feedback() == TransactionStatus.MANUAL_PROCESSING) {
+                    transactionCard.setMaxAllowed(decreaseLimit(transactionCard.getMaxAllowed(), transaction.getAmount()));
+                }
+
+                if (transactionFeedbackDTO.feedback() == TransactionStatus.PROHIBITED) {
+                    transactionCard.setMaxAllowed(decreaseLimit(transactionCard.getMaxAllowed(), transaction.getAmount()));
+                    transactionCard.setMaxManual(decreaseLimit(transactionCard.getMaxManual(), transaction.getAmount()));
+                }
+            }
+            case MANUAL_PROCESSING -> {
+                if (transactionFeedbackDTO.feedback() == TransactionStatus.ALLOWED) {
+                    transactionCard.setMaxAllowed(increaseLimit(transactionCard.getMaxAllowed(), transaction.getAmount()));
+                }
+
+                if (transactionFeedbackDTO.feedback() == TransactionStatus.PROHIBITED) {
+                    transactionCard.setMaxManual(decreaseLimit(transactionCard.getMaxManual(), transaction.getAmount()));
+                }
+            }
+            case PROHIBITED -> {
+                if (transactionFeedbackDTO.feedback() == TransactionStatus.ALLOWED) {
+                    transactionCard.setMaxAllowed(increaseLimit(transactionCard.getMaxAllowed(), transaction.getAmount()));
+                    transactionCard.setMaxManual(increaseLimit(transactionCard.getMaxManual(), transaction.getAmount()));
+                }
+
+                if (transactionFeedbackDTO.feedback() == TransactionStatus.MANUAL_PROCESSING) {
+                    transactionCard.setMaxManual(increaseLimit(transactionCard.getMaxManual(), transaction.getAmount()));
+                }
+            }
+        }
+
+        transaction.setFeedback(transactionFeedbackDTO.feedback());
+
+        transactionRepository.save(transaction);
+
+        return transaction.toDTO();
+    }
+
+    private TransactionResponseDTO getTransactionResponse(TransactionRequestDTO transactionRequest, Card card) {
         TransactionResponseDTO transactionResponseDTO = new TransactionResponseDTO();
-        boolean isIPBlacklisted = checkIfIPBlacklisted(transactionRequest.ip());
-        boolean isCardBlacklisted = checkIfCardBlacklisted(transactionRequest.number());
-        
+        boolean isIPBlacklisted = ipService.isIPBlacklisted(transactionRequest.ip());
+        boolean isCardBlacklisted = stolenCardService.isCardBlacklisted(transactionRequest.number());
+
         List<Transaction.RegionAndIP> lastHourRegionAndIp = transactionRepository.
                 findAllDistinctRegionAndIPTransactionBetweenDateTime(
                         transactionRequest.dateTime().minusHours(1),
@@ -81,11 +160,11 @@ public class TransactionService {
 
         int distinctRegionTransactionCount = regionSet.size();
         int distinctIPTransactionCount = ipSet.size();
-
-        if (isIPBlacklisted || isCardBlacklisted || transactionRequest.amount() > 1500
+        
+        if (isIPBlacklisted || isCardBlacklisted || transactionRequest.amount() > card.getMaxManual()
                 || distinctIPTransactionCount > 2 || distinctRegionTransactionCount > 2) {
             transactionResponseDTO.setStatus(TransactionStatus.PROHIBITED);
-        } else if (transactionRequest.amount() > 200 || distinctIPTransactionCount == 2
+        } else if (transactionRequest.amount() > card.getMaxAllowed() || distinctIPTransactionCount == 2
                 || distinctRegionTransactionCount == 2) {
             transactionResponseDTO.setStatus(TransactionStatus.MANUAL_PROCESSING);
         } else {
@@ -94,15 +173,15 @@ public class TransactionService {
 
         addTransactionReason(transactionResponseDTO, transactionRequest.amount(),
                 isIPBlacklisted, isCardBlacklisted,
-                distinctIPTransactionCount, distinctRegionTransactionCount);
+                distinctIPTransactionCount, distinctRegionTransactionCount, card);
 
         return transactionResponseDTO;
     }
 
     private void addTransactionReason(
             TransactionResponseDTO transactionResponseDTO, long amount, boolean isIPBlacklisted,
-            boolean isCardBlacklisted, int distinctIPTransactionCount, int distinctRegionTransactionCount
-    ) {
+            boolean isCardBlacklisted, int distinctIPTransactionCount, int distinctRegionTransactionCount,
+            Card card) {
 
         if (transactionResponseDTO.getStatus() == TransactionStatus.ALLOWED) {
             return;
@@ -125,13 +204,13 @@ public class TransactionService {
                 transactionResponseDTO.addReason(TransactionReason.REGION_CORRELATION);
             }
 
-            if (amount > 1500) {
+            if (amount > card.getMaxManual()) {
                 transactionResponseDTO.addReason(TransactionReason.AMOUNT);
             }
 
 
         } else {
-            if (amount > 200) {
+            if (amount > card.getMaxAllowed()) {
                 transactionResponseDTO.addReason(TransactionReason.AMOUNT);
             }
 
@@ -147,18 +226,13 @@ public class TransactionService {
 
     }
 
-    private boolean checkIfIPBlacklisted(String ipAddress) {
-        Optional<IP> ip = ipRepository.findByIp(ipAddress);
 
-        return ip.isPresent();
+    private int increaseLimit(int currentLimit, int transactionValue) {
+        return (int) Math.ceil(0.8 * currentLimit + 0.2 * transactionValue);
     }
 
-    private boolean checkIfCardBlacklisted(String cardNumber) {
-        Optional<StolenCard> stolenCard = stolenCardRepository.findByNumber(cardNumber);
-
-        return stolenCard.isPresent();
+    private int decreaseLimit(int currentLimit, int transactionValue) {
+        return (int) Math.ceil(0.8 * currentLimit - 0.2 * transactionValue);
     }
-
-
 }
 

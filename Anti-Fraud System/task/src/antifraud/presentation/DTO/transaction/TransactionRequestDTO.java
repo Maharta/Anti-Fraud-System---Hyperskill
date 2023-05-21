@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-public record TransactionRequestDTO(@NotNull long amount,
+public record TransactionRequestDTO(@NotNull int amount,
                                     @ValidIP String ip,
                                     @ValidCardNumber String number,
                                     Region region,
